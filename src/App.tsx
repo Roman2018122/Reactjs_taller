@@ -16,7 +16,7 @@ function App() {
         </div>
 
         <div>
-          <h1>🚗 Bienvenidos a Taller Mecánico</h1>
+          <h1>🚗 Bienvenidos a Taller Mecánico uwu</h1>
 
           <p>
             Sistema de gestión para la administración de clientes, vehículos,
