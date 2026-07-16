@@ -1,0 +1,70 @@
+name: Deploy React to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Crear variables de producción
+        run: |
+          printf "%s" "${{ secrets.REACT_ENV }}" > .env.production
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Construir aplicación
+        run: npm run build
+
+      - name: Subir build al VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          source: "dist/*"
+          target: "/tmp/react_build"
+          rm: true
+
+      - name: Activar build en Nginx
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          script: |
+            set -e
+
+            mkdir -p /var/www/torres_taller_react
+            rm -rf /var/www/torres_taller_react/*
+            cp -r /tmp/react_build/dist/. /var/www/torres_taller_react/
+
+            chown -R www-data:www-data /var/www/torres_taller_react
+
+            nginx -t
+            systemctl reload nginx
+
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              http://127.0.0.1:8080)
+
+            echo "Código HTTP recibido: $HTTP_STATUS"
+
+            if [ "$HTTP_STATUS" != "200" ]; then
+              echo "La aplicación React no respondió correctamente"
+              exit 1
+            fi
+
+            echo "Despliegue React completado correctamente"
