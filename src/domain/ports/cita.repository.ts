@@ -3,6 +3,10 @@
 import type {
   Cita,
   CitaFormData,
+  ResponderCitaData,
+  RegistrarAsistenciaData,
+
+
 } from "@/domain/entities/cita.entity";
 
 export interface CitaRepository {
@@ -25,5 +29,15 @@ export interface CitaRepository {
     id: number,
     motivoCancelacion: string,
   ): Promise<Cita>;
+
+  responder(
+    id: number,
+    data: ResponderCitaData,
+  ): Promise<Cita>;
+
+  registrarAsistencia(
+  id: number,
+  data: RegistrarAsistenciaData,
+): Promise<Cita>;
     
 }

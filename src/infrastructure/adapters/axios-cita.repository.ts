@@ -3,11 +3,15 @@
 import type {
   Cita,
   CitaFormData,
+  ResponderCitaData,
+  RegistrarAsistenciaData,
+
 } from "@/domain/entities/cita.entity";
 import type { PaginatedResponse } from "@/domain/entities/paginated-response.entity";
 import type { CitaRepository } from "@/domain/ports/cita.repository";
 
 import { apiClient } from "@/infrastructure/http/axios-client";
+import { parseApiError } from "@/infrastructure/http/parse-api-error";
 
 export class AxiosCitaRepository
   implements CitaRepository
@@ -68,5 +72,37 @@ export class AxiosCitaRepository
     );
 
     return data;
+  }
+  async responder(
+    id: number,
+    data: ResponderCitaData,
+  ): Promise<Cita> {
+    try {
+      const response =
+        await apiClient.post<Cita>(
+          `/citas/${id}/responder/`,
+          data,
+        );
+
+      return response.data;
+    } catch (error) {
+      throw parseApiError(error);
+    }
+  }
+  async registrarAsistencia(
+    id: number,
+    data: RegistrarAsistenciaData,
+  ): Promise<Cita> {
+    try {
+      const response =
+        await apiClient.post<Cita>(
+          `/citas/${id}/registrar-asistencia/`,
+          data,
+        );
+
+      return response.data;
+    } catch (error) {
+      throw parseApiError(error);
+    }
   }
 }

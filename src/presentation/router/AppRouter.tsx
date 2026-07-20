@@ -20,6 +20,9 @@ import CitaFormPage from "@/presentation/pages/cliente/citas/CitaFormPage";
 import CitaDetallePage from "@/presentation/pages/cliente/citas/CitaDetallePage";
 import CitaEditarPage from "@/presentation/pages/cliente/citas/CitaEditarPage";
 
+import CitasEmpleadoPage from "@/presentation/pages/empleado/citas/CitasEmpleadoPage";
+import CitaEmpleadoDetallePage from "@/presentation/pages/empleado/citas/CitaEmpleadoDetallePage";
+
 import ProtectedRoute from "./ProtectedRoute";
 
 import AppShell from "@/presentation/components/AppShell";
@@ -137,6 +140,16 @@ export default function AppRouter() {
             }
           />
         </Route>
+        <Route
+          path="/empleado/citas"
+          element={<CitasEmpleadoPage />}
+        />
+
+        <Route
+          path="/empleado/citas/:id"
+          element={<CitaEmpleadoDetallePage />}
+        />
+
 
         {/* Redirección temporal */}
         <Route

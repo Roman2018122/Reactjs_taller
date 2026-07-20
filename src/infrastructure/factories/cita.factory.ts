@@ -7,6 +7,9 @@ import { GetCitasUseCase } from "@/application/use-cases/citas/get-citas.use-cas
 import { UpdateCitaUseCase } from "@/application/use-cases/citas/update-cita.use-case";
 import { CancelCitaUseCase } from "@/application/use-cases/citas/cancel-cita.use-case";
 
+import {ResponderCitaUseCase,} from "@/application/use-cases/citas/responder-cita.use-case";
+import {RegistrarAsistenciaUseCase,} from "@/application/use-cases/citas/registrar-asistencia.use-case";
+
 import { AxiosCitaRepository } from "@/infrastructure/adapters/axios-cita.repository";
 
 const citaRepository = new AxiosCitaRepository();
@@ -32,3 +35,9 @@ export const deleteCitaUseCase = new DeleteCitaUseCase(
 );
 export const cancelCitaUseCase =
   new CancelCitaUseCase(citaRepository);
+
+export const responderCitaUseCase =
+  new ResponderCitaUseCase(citaRepository,);
+
+export const registrarAsistenciaUseCase =
+  new RegistrarAsistenciaUseCase(citaRepository,);

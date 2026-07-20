@@ -45,3 +45,17 @@ export interface CitaFormData {
   motivo: string;
   observaciones_cliente: string;
 }
+
+export interface ResponderCitaData {
+  estado:
+    | "CONFIRMADA"
+    | "REPROGRAMADA";
+
+  respuesta_taller: string;
+
+  fecha_solicitada?: string;
+}
+
+export interface RegistrarAsistenciaData {
+  asistio: boolean;
+}

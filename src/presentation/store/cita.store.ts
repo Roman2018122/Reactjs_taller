@@ -5,6 +5,9 @@ import { create } from "zustand";
 import type {
   Cita,
   CitaFormData,
+  ResponderCitaData,
+  RegistrarAsistenciaData,
+
 } from "@/domain/entities/cita.entity";
 
 import {
@@ -14,6 +17,9 @@ import {
   getCitasUseCase,
   updateCitaUseCase,
   cancelCitaUseCase,
+  responderCitaUseCase,
+  registrarAsistenciaUseCase,
+
 } from "@/infrastructure/factories/cita.factory";
 
 interface CitaState {
@@ -44,7 +50,15 @@ interface CitaState {
   clearCita: () => void;
   clearError: () => void;
 
-  
+  responderCita: (
+    id: number,
+    data: ResponderCitaData,
+  ) => Promise<Cita>;
+
+  registrarAsistencia: (
+  id: number,
+  data: RegistrarAsistenciaData,
+  ) => Promise<Cita>;
 }
 
 function getErrorMessage(error: unknown): string {
@@ -252,6 +266,99 @@ export const useCitaStore = create<CitaState>(
         set({
           loading: false,
           error: message,
+        });
+
+        throw error;
+      }
+    },
+
+    responderCita: async (
+      id,
+      data,
+    ): Promise<Cita> => {
+      set({
+        loading: true,
+        error: null,
+      });
+
+      try {
+        const citaActualizada =
+          await responderCitaUseCase.execute(
+            id,
+            data,
+          );
+
+        set((state) => ({
+          citas: state.citas.map(
+            (cita) =>
+              cita.id === id
+                ? citaActualizada
+                : cita,
+          ),
+
+          cita:
+            state.cita?.id === id
+              ? citaActualizada
+              : state.cita,
+
+          loading: false,
+        }));
+
+        return citaActualizada;
+      } catch (error) {
+        const mensaje =
+          error instanceof Error
+            ? error.message
+            : "No fue posible responder la cita.";
+
+        set({
+          loading: false,
+          error: mensaje,
+        });
+
+        throw error;
+      }
+    },
+    registrarAsistencia: async (
+      id,
+      data,
+    ) => {
+      set({
+        loading: true,
+        error: null,
+      });
+
+      try {
+        const citaActualizada =
+          await registrarAsistenciaUseCase
+            .execute(
+              id,
+              data,
+            );
+
+        set((state) => ({
+          cita: citaActualizada,
+
+          citas: state.citas.map(
+            (cita) =>
+              cita.id === id
+                ? citaActualizada
+                : cita,
+          ),
+
+          loading: false,
+        }));
+
+        return citaActualizada;
+      } catch (error) {
+        const mensaje =
+          error instanceof Error
+            ? error.message
+            : "No se pudo registrar la asistencia.";
+
+        set({
+          loading: false,
+          error: mensaje,
         });
 
         throw error;
