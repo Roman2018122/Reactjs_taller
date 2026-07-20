@@ -29,6 +29,11 @@ interface AuthState {
   isLoading: boolean;
 
   /**
+   * Indica si ya terminó la restauración inicial de la sesión.
+   */
+  isInitialized: boolean;
+
+  /**
    * Mensaje del último error de autenticación.
    */
   error: string | null;
@@ -104,6 +109,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
   tokens: null,
   isLoading: false,
+  isInitialized: false,
   error: null,
 
   async login(dto) {
@@ -119,6 +125,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         user: session.user,
         tokens: session.tokens,
         isLoading: false,
+        isInitialized: true,
         error: null,
       });
     } catch (error: unknown) {
@@ -126,45 +133,48 @@ export const useAuthStore = create<AuthStore>((set) => ({
         user: null,
         tokens: null,
         isLoading: false,
+        isInitialized: true,
         error: getErrorMessage(
           error,
           "Error al iniciar sesión.",
         ),
       });
 
-      throw error;
-    }
-  },
+    throw error;
+  }
+},
 
-  async register(dto) {
+async register(dto) {
+  set({
+    isLoading: true,
+    error: null,
+  });
+
+  try {
+    const session = await authUseCase.register(dto);
+
     set({
-      isLoading: true,
+      user: session.user,
+      tokens: session.tokens,
+      isLoading: false,
+      isInitialized: true,
       error: null,
     });
+  } catch (error: unknown) {
+    set({
+      user: null,
+      tokens: null,
+      isLoading: false,
+      isInitialized: true,
+      error: getErrorMessage(
+        error,
+        "Error al registrar el cliente.",
+      ),
+    });
 
-    try {
-      const session = await authUseCase.register(dto);
-
-      set({
-        user: session.user,
-        tokens: session.tokens,
-        isLoading: false,
-        error: null,
-      });
-    } catch (error: unknown) {
-      set({
-        user: null,
-        tokens: null,
-        isLoading: false,
-        error: getErrorMessage(
-          error,
-          "Error al registrar el cliente.",
-        ),
-      });
-
-      throw error;
-    }
-  },
+    throw error;
+  }
+},
 
   async logout() {
     set({
@@ -179,50 +189,54 @@ export const useAuthStore = create<AuthStore>((set) => ({
         user: null,
         tokens: null,
         isLoading: false,
+        isInitialized: true,
         error: null,
       });
     }
   },
 
-  async loadSession() {
-    set({
-      isLoading: true,
-      error: null,
-    });
+async loadSession() {
+  set({
+    isLoading: true,
+    error: null,
+  });
 
-    try {
-      const session = await authUseCase.restoreSession();
+  try {
+    const session =
+      await authUseCase.restoreSession();
 
-      if (!session) {
-        set({
-          user: null,
-          tokens: null,
-          isLoading: false,
-          error: null,
-        });
-
-        return;
-      }
-
-      set({
-        user: session.user,
-        tokens: session.tokens,
-        isLoading: false,
-        error: null,
-      });
-    } catch (error: unknown) {
+    if (!session) {
       set({
         user: null,
         tokens: null,
         isLoading: false,
-        error: getErrorMessage(
-          error,
-          "No se pudo restaurar la sesión.",
-        ),
+        isInitialized: true,
+        error: null,
       });
-    }
-  },
 
+      return;
+    }
+
+    set({
+      user: session.user,
+      tokens: session.tokens,
+      isLoading: false,
+      isInitialized: true,
+      error: null,
+    });
+  } catch (error: unknown) {
+    set({
+      user: null,
+      tokens: null,
+      isLoading: false,
+      isInitialized: true,
+      error: getErrorMessage(
+        error,
+        "No se pudo restaurar la sesión.",
+      ),
+    });
+  }
+},
   clearError() {
     set({
       error: null,
@@ -236,6 +250,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       user: null,
       tokens: null,
       isLoading: false,
+      isInitialized: true,
       error: null,
     });
   },

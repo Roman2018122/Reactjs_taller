@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+
 import {
   Navigate,
   useLocation,
@@ -28,12 +29,12 @@ export default function ProtectedRoute({
     (state) => state.user,
   );
 
-  const isLoading = useAuthStore(
-    (state) => state.isLoading,
+  const isInitialized = useAuthStore(
+    (state) => state.isInitialized,
   );
 
-  // Mientras se restaura la sesión
-  if (isLoading) {
+  // Espera hasta que se haya intentado restaurar la sesión.
+  if (!isInitialized) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -41,18 +42,20 @@ export default function ProtectedRoute({
     );
   }
 
-  // No autenticado
+  // La restauración terminó y no existe usuario autenticado.
   if (!user) {
     return (
       <Navigate
         to="/login"
         replace
-        state={{ from: location }}
+        state={{
+          from: location,
+        }}
       />
     );
   }
 
-  // Tiene sesión pero no tiene el rol requerido
+  // Tiene sesión, pero no posee el rol requerido.
   if (
     allowedRoles &&
     !allowedRoles.includes(user.rol)

@@ -8,6 +8,18 @@ import RegisterPage from "@/presentation/pages/auth/RegisterPage";
 import ClienteDashboard from "@/presentation/pages/cliente/ClienteDashboard";
 import EmpleadoDashboard from "@/presentation/pages/empleado/EmpleadoDashboard";
 
+import VehiculosPage from "@/presentation/pages/vehiculos/VehiculosPage";
+import VehiculoFormPage from "@/presentation/pages/vehiculos/VehiculoFormPage";
+
+
+import VehiculoDetallePage from "@/presentation/pages/vehiculos/VehiculoDetallePage";
+import VehiculoEditarPage from "@/presentation/pages/vehiculos/VehiculoEditarPage";
+
+import CitasPage from "@/presentation/pages/cliente/citas/CitasPage";
+import CitaFormPage from "@/presentation/pages/cliente/citas/CitaFormPage";
+import CitaDetallePage from "@/presentation/pages/cliente/citas/CitaDetallePage";
+import CitaEditarPage from "@/presentation/pages/cliente/citas/CitaEditarPage";
+
 import ProtectedRoute from "./ProtectedRoute";
 
 import AppShell from "@/presentation/components/AppShell";
@@ -40,6 +52,75 @@ export default function AppRouter() {
               </ProtectedRoute>
             }
           />
+
+          
+          {/* Vehículos */}
+            <Route
+              path="/cliente/vehiculos"
+              element={
+                <ProtectedRoute
+                  allowedRoles={["CLIENTE"]}
+                >
+                  <VehiculosPage />
+                </ProtectedRoute>
+              }
+            />
+            
+            ## Nuevo vehiculo
+            <Route
+              path="/cliente/vehiculos/nuevo"
+              element={
+                <ProtectedRoute
+                  allowedRoles={["CLIENTE"]}
+                >
+                  <VehiculoFormPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/cliente/vehiculos/:id"
+              element={
+                <ProtectedRoute
+                  allowedRoles={["CLIENTE"]}
+                >
+                  <VehiculoDetallePage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/cliente/vehiculos/:id/editar"
+              element={
+                <ProtectedRoute
+                  allowedRoles={["CLIENTE"]}
+                >
+                  <VehiculoEditarPage />
+                </ProtectedRoute>
+              }
+            
+            />
+            <Route
+              path="/cliente/citas"
+              element={<CitasPage />}
+            />
+
+            <Route
+              path="/cliente/citas/nueva"
+              element={<CitaFormPage />}
+            />
+
+            <Route
+              path="/cliente/citas/:id"
+              element={<CitaDetallePage />}
+            />
+
+            <Route
+              path="/cliente/citas/:id/editar"
+              element={<CitaEditarPage />}
+            />
+
+
 
           {/* Dashboard del empleado */}
           <Route

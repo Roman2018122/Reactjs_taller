@@ -16,7 +16,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/presentation/components/ui/card";
+} from "@/components/ui/card";
 
 import { useAuthStore } from "@/presentation/store/auth.store";
 

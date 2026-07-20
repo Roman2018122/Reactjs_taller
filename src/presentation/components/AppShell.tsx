@@ -1,6 +1,11 @@
 // src/presentation/components/AppShell.tsx
 
 import {
+  useEffect,
+  type ReactNode,
+} from "react";
+
+import {
   Link,
   NavLink,
   Outlet,
@@ -25,7 +30,7 @@ import { Button } from "@/presentation/components/ui/button";
 interface NavigationItem {
   label: string;
   path: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
 }
 
 function getNavLinkClass({
@@ -44,8 +49,27 @@ function getNavLinkClass({
 export default function AppShell() {
   const navigate = useNavigate();
 
-  const user = useAuthStore((state) => state.user);
-  const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore(
+    (state) => state.user,
+  );
+
+  const logout = useAuthStore(
+    (state) => state.logout,
+  );
+
+  const loadSession = useAuthStore(
+    (state) => state.loadSession,
+  );
+
+  const isInitialized = useAuthStore(
+    (state) => state.isInitialized,
+  );
+
+  useEffect(() => {
+    if (!isInitialized) {
+      void loadSession();
+    }
+  }, [isInitialized, loadSession]);
 
   const publicNavigation: NavigationItem[] = [
     {
