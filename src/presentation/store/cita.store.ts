@@ -1,4 +1,4 @@
-// src/presentation/stores/cita.store.ts
+// src/presentation/store/cita.store.ts
 
 import { create } from "zustand";
 
@@ -56,7 +56,7 @@ function getErrorMessage(error: unknown): string {
 }
 
 export const useCitaStore = create<CitaState>(
-  (set, get) => ({
+  (set) => ({
     citas: [],
     cita: null,
 
