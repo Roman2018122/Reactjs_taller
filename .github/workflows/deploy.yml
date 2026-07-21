@@ -33,11 +33,12 @@ jobs:
         env:
           VITE_API_BASE_URL: http://165.227.99.251/api
           VITE_APP_NAME: TorresReactApp
-        
-
-
-
         run: npm run build
+
+      - name: Verificar URL compilada
+        run: |
+          echo "Buscando URL de API en dist..."
+          grep -R -o "http://165.227.99.251[^\"']*" dist/assets || true
 
       - name: Subir build al VPS
         uses: appleboy/scp-action@v0.1.7
