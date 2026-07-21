@@ -21,12 +21,22 @@ jobs:
 
       - name: Crear variables de producción
         run: |
-          printf "%s" "${{ secrets.REACT_ENV }}" > .env.production
+          printf '%s\n' "${{ secrets.REACT_ENV }}" > .env.production
+
+          echo "Contenido de .env.production:"
+          cat .env.production
 
       - name: Instalar dependencias
         run: npm ci
 
       - name: Construir aplicación
+        env:
+          VITE_API_BASE_URL: http://165.227.99.251/api
+          VITE_APP_NAME: TorresReactApp
+        
+
+
+
         run: npm run build
 
       - name: Subir build al VPS
