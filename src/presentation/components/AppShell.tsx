@@ -130,6 +130,14 @@ export default function AppShell() {
       label: "Recomendaciones",
       path: "/cliente/recomendaciones",
     },
+
+    {
+      label: "Mis órdenes",
+      path: "/cliente/ordenes",
+      icon: (
+        <ClipboardList className="h-4 w-4" />
+      ),
+    },
   ];
 
   const empleadoNavigation: NavigationItem[] = [
@@ -170,6 +178,11 @@ export default function AppShell() {
     {
       label: "Recomendaciones",
       path: "/empleado/recomendaciones",
+    },
+    {
+      label: "Órdenes de trabajo",
+      path: "/empleado/ordenes",
+      icon: <ClipboardList className="h-4 w-4" />,
     },
   ];
 
@@ -274,7 +287,7 @@ export default function AppShell() {
         </div>
       </header>
 
-      <div className="mx-auto flex w-full max-w-7xl flex-1">
+      <div className="flex w-full flex-1">
         {/* Navegación privada */}
         {user && (
           <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white px-4 py-6 md:block">

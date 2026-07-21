@@ -60,9 +60,118 @@ export interface OrdenTrabajo {
 
   activo: boolean;
 
-  historial_estados: unknown[];
-  detalles_servicios: unknown[];
+  historial_estados: HistorialEstadoOrden[];
+  detalles_servicios: DetalleServicioOrden[];
 
   creado_en: string;
   actualizado_en: string;
+}
+export interface HistorialEstadoOrden {
+  id: number;
+  orden: number;
+
+  estado_anterior:
+    | EstadoOrdenTrabajo
+    | null;
+
+  estado_anterior_display:
+    | string
+    | null;
+
+  estado_nuevo: EstadoOrdenTrabajo;
+  estado_nuevo_display: string;
+
+  titulo: string;
+  descripcion: string;
+
+  visible_cliente: boolean;
+
+  empleado:
+    | number
+    | null;
+
+  empleado_nombre:
+    | string
+    | null;
+
+  creado_en: string;
+}
+
+export interface DetalleServicioOrden {
+  id: number;
+
+  orden: number;
+  orden_numero: string;
+
+  vehiculo_placa: string;
+
+  servicio: number;
+  servicio_nombre: string;
+
+  diagnostico:
+    | number
+    | null;
+
+  diagnostico_titulo:
+    | string
+    | null;
+
+  empleado:
+    | number
+    | null;
+
+  empleado_nombre:
+    | string
+    | null;
+
+  descripcion: string;
+
+  cantidad: number;
+
+  precio_unitario: string;
+  subtotal: string;
+
+  estado: string;
+  estado_display: string;
+
+  visible_cliente: boolean;
+
+  fecha_inicio:
+    | string
+    | null;
+
+  fecha_finalizacion:
+    | string
+    | null;
+
+  creado_en: string;
+  actualizado_en: string;
+}
+
+export interface OrdenTrabajoPaginatedResponse {
+  count: number;
+
+  next:
+    | string
+    | null;
+
+  previous:
+    | string
+    | null;
+
+  results: OrdenTrabajo[];
+}
+
+export interface OrdenTrabajoFilters {
+  page?: number;
+
+  search?: string;
+
+  estado?:
+    | EstadoOrdenTrabajo
+    | "";
+}
+
+export interface UpdateOrdenTrabajoEstadoData {
+  estado: EstadoOrdenTrabajo;
 }

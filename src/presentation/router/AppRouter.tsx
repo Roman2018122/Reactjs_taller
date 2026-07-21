@@ -23,6 +23,14 @@ import CitaEditarPage from "@/presentation/pages/cliente/citas/CitaEditarPage";
 import CitasEmpleadoPage from "@/presentation/pages/empleado/citas/CitasEmpleadoPage";
 import CitaEmpleadoDetallePage from "@/presentation/pages/empleado/citas/CitaEmpleadoDetallePage";
 
+
+import OrdenTrabajoEmpleadoListPage from "@/presentation/pages/empleado/ordenes/OrdenTrabajoEmpleadoListPage";
+import OrdenTrabajoEmpleadoDetallePage from "@/presentation/pages/empleado/ordenes/OrdenTrabajoEmpleadoDetallePage";
+
+
+import OrdenTrabajoClienteListPage from "@/presentation/pages/cliente/ordenes/OrdenTrabajoClienteListPage";
+import OrdenTrabajoClienteDetallePage from "@/presentation/pages/cliente/ordenes/OrdenTrabajoClienteDetallePage";
+
 import ProtectedRoute from "./ProtectedRoute";
 
 import AppShell from "@/presentation/components/AppShell";
@@ -123,7 +131,18 @@ export default function AppRouter() {
               element={<CitaEditarPage />}
             />
 
-
+            <Route
+              path="/cliente/ordenes"
+              element={
+                <OrdenTrabajoClienteListPage />
+              }
+            />
+            <Route
+              path="/cliente/ordenes/:id"
+              element={
+                <OrdenTrabajoClienteDetallePage />
+              }
+            />
 
           {/* Dashboard del empleado */}
           <Route
@@ -148,6 +167,16 @@ export default function AppRouter() {
         <Route
           path="/empleado/citas/:id"
           element={<CitaEmpleadoDetallePage />}
+        />
+
+        <Route
+          path="/empleado/ordenes"
+          element={<OrdenTrabajoEmpleadoListPage />}
+        />
+
+        <Route
+          path="/empleado/ordenes/:id"
+          element={<OrdenTrabajoEmpleadoDetallePage />}
         />
 
 
