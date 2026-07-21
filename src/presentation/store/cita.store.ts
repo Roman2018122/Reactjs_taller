@@ -7,8 +7,13 @@ import type {
   CitaFormData,
   ResponderCitaData,
   RegistrarAsistenciaData,
+  CrearOrdenDesdeCitaData,
+
 
 } from "@/domain/entities/cita.entity";
+import type {
+  OrdenTrabajo,
+} from "@/domain/entities/orden-trabajo.entity";
 
 import {
   createCitaUseCase,
@@ -19,6 +24,7 @@ import {
   cancelCitaUseCase,
   responderCitaUseCase,
   registrarAsistenciaUseCase,
+  crearOrdenDesdeCitaUseCase,
 
 } from "@/infrastructure/factories/cita.factory";
 
@@ -56,9 +62,14 @@ interface CitaState {
   ) => Promise<Cita>;
 
   registrarAsistencia: (
-  id: number,
-  data: RegistrarAsistenciaData,
+    id: number,
+    data: RegistrarAsistenciaData,
   ) => Promise<Cita>;
+
+  crearOrden: (
+    citaId: number,
+    data: CrearOrdenDesdeCitaData,
+  ) => Promise<OrdenTrabajo>;
 }
 
 function getErrorMessage(error: unknown): string {
@@ -355,6 +366,47 @@ export const useCitaStore = create<CitaState>(
           error instanceof Error
             ? error.message
             : "No se pudo registrar la asistencia.";
+
+        set({
+          loading: false,
+          error: mensaje,
+        });
+
+        throw error;
+      }
+    },
+
+    crearOrden: async (
+      citaId,
+      data,
+    ) => {
+      set({
+        loading: true,
+        error: null,
+      });
+
+      try {
+        const orden =
+          await crearOrdenDesdeCitaUseCase
+            .execute(
+              citaId,
+              data,
+            );
+
+        set({
+          loading: false,
+          error: null,
+        });
+
+        return orden;
+      } catch (error) {
+        const mensaje =
+          error instanceof Error
+            ? error.message
+            : (
+                "No se pudo crear la " +
+                "orden de trabajo."
+              );
 
         set({
           loading: false,

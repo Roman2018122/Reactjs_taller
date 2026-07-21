@@ -5,10 +5,14 @@ import type {
   CitaFormData,
   ResponderCitaData,
   RegistrarAsistenciaData,
+  CrearOrdenDesdeCitaData,
+
 
 } from "@/domain/entities/cita.entity";
 import type { PaginatedResponse } from "@/domain/entities/paginated-response.entity";
 import type { CitaRepository } from "@/domain/ports/cita.repository";
+
+import type {OrdenTrabajo,} from "@/domain/entities/orden-trabajo.entity";
 
 import { apiClient } from "@/infrastructure/http/axios-client";
 import { parseApiError } from "@/infrastructure/http/parse-api-error";
@@ -104,5 +108,17 @@ export class AxiosCitaRepository
     } catch (error) {
       throw parseApiError(error);
     }
+  }
+  async crearOrden(
+    citaId: number,
+    data: CrearOrdenDesdeCitaData,
+  ): Promise<OrdenTrabajo> {
+    const response =
+      await apiClient.post<OrdenTrabajo>(
+        `/citas/${citaId}/crear-orden/`,
+        data,
+      );
+
+    return response.data;
   }
 }

@@ -5,9 +5,14 @@ import type {
   CitaFormData,
   ResponderCitaData,
   RegistrarAsistenciaData,
-
+  CrearOrdenDesdeCitaData,
+  
 
 } from "@/domain/entities/cita.entity";
+
+import type {
+  OrdenTrabajo,
+} from "@/domain/entities/orden-trabajo.entity";
 
 export interface CitaRepository {
   getAll(): Promise<Cita[]>;
@@ -38,6 +43,10 @@ export interface CitaRepository {
   registrarAsistencia(
   id: number,
   data: RegistrarAsistenciaData,
-): Promise<Cita>;
+  ): Promise<Cita>;
     
+  crearOrden(
+  citaId: number,
+  data: CrearOrdenDesdeCitaData,
+  ): Promise<OrdenTrabajo>;
 }

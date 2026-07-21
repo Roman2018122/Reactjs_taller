@@ -24,7 +24,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-
+import CrearOrdenTrabajoDialog from "./components/CrearOrdenTrabajoDialog";
 
 import { useCitaStore } from "@/presentation/store/cita.store";
 
@@ -188,9 +188,12 @@ export default function CitaEmpleadoDetallePage() {
     setErrorAsistencia,
   ] = useState<string | null>(null);
 
-
-  useEffect(() => {
-    const citaId = Number(id);
+  const [
+    modalOrdenAbierto,
+    setModalOrdenAbierto,
+  ] = useState(false);
+    useEffect(() => {
+      const citaId = Number(id);
 
     if (
       !id ||
@@ -660,12 +663,15 @@ export default function CitaEmpleadoDetallePage() {
                 </button>
               )}
 
-              {cita.estado ===
-                "ATENDIDA" && (
+              {cita.estado === "ATENDIDA" && (
                 <button
                   type="button"
-                  disabled
-                  className="cursor-not-allowed rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white opacity-50"
+                  onClick={() => {
+                    setModalOrdenAbierto(
+                      true,
+                    );
+                  }}
+                  className="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
                 >
                   Crear Orden de Trabajo
                 </button>
@@ -972,6 +978,20 @@ export default function CitaEmpleadoDetallePage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        {cita && (
+        <CrearOrdenTrabajoDialog
+          cita={cita}
+          open={modalOrdenAbierto}
+          onOpenChange={
+            setModalOrdenAbierto
+          }
+          onOrdenCreada={(orden) => {
+            navigate(
+              `/empleado/ordenes/${orden.id}`,
+            );
+          }}
+        />
+      )}
     </main>
   );
 }
