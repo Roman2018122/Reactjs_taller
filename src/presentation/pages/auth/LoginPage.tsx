@@ -155,7 +155,7 @@ export default function LoginPage() {
           </div>
 
           <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-            Taller Mecánico
+            AutoCenter
           </CardTitle>
 
           <CardDescription className="mt-2 text-sm leading-6 text-slate-600">

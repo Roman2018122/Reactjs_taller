@@ -223,7 +223,7 @@ export default function AppShell() {
 
             <div>
               <span className="block text-base font-bold tracking-tight text-slate-900">
-                Taller Mecánico
+                AutoCenter
               </span>
 
               <span className="hidden text-xs text-slate-500 sm:block">
@@ -325,7 +325,7 @@ export default function AppShell() {
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white px-4 py-5 text-center text-sm text-slate-500">
         <p>
-          Taller Mecánico © {new Date().getFullYear()}
+          AutoCenter © {new Date().getFullYear()}
         </p>
       </footer>
     </div>

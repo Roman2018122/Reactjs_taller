@@ -31,6 +31,10 @@ import OrdenTrabajoEmpleadoDetallePage from "@/presentation/pages/empleado/orden
 import OrdenTrabajoClienteListPage from "@/presentation/pages/cliente/ordenes/OrdenTrabajoClienteListPage";
 import OrdenTrabajoClienteDetallePage from "@/presentation/pages/cliente/ordenes/OrdenTrabajoClienteDetallePage";
 
+import InicioPage from "@/presentation/pages/public/InicioPage";
+
+import ServiciosPublicPage from "@/presentation/pages/public/ServiciosPublicPage";
+
 import ProtectedRoute from "./ProtectedRoute";
 
 import AppShell from "@/presentation/components/AppShell";
@@ -39,6 +43,17 @@ export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+
+        <Route
+          path="/"
+          element={<InicioPage />}
+        />
+
+        <Route
+          path="/servicios"
+          element={<ServiciosPublicPage />}
+        />
+
         {/* Autenticación sin AppShell */}
         <Route
           path="/login"
