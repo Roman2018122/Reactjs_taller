@@ -7,7 +7,6 @@ import {
   Car,
   CalendarDays,
   ClipboardList,
-  Stethoscope,
   Wrench,
   ShieldCheck,
 } from "lucide-react";
