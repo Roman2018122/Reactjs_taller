@@ -7,7 +7,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import type { VehiculoFormData } from "@/domain/entities/vehiculo.entity";
 
@@ -34,8 +34,24 @@ const initialFormData: VehiculoFormData = {
   numero_chasis: "",
 };
 
+interface VehiculoFormLocationState {
+  returnTo?: string;
+  fromServiceRequest?: boolean;
+}
+
 export default function VehiculoFormPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const navigationState =
+    location.state as
+      | VehiculoFormLocationState
+      | null;
+
+  const returnTo =
+    navigationState?.returnTo ??
+    "/cliente/vehiculos";
+
 
   const [formData, setFormData] =
     useState<VehiculoFormData>(initialFormData);
@@ -164,13 +180,18 @@ export default function VehiculoFormPage() {
     });
 
     if (vehiculoCreado) {
-      navigate("/cliente/vehiculos");
+      navigate(returnTo, {
+        replace: true,
+      });
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     clearVehiculoError();
-    navigate("/cliente/vehiculos");
+
+    navigate(returnTo, {
+      replace: true,
+    });
   };
 
   return (

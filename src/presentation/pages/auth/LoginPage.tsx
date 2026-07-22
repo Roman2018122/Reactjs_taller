@@ -1,4 +1,3 @@
-
 // src/presentation/pages/auth/LoginPage.tsx
 
 import { useEffect } from "react";
@@ -19,6 +18,10 @@ import {
 
 import { useAuthStore } from "@/presentation/store/auth.store";
 
+import {
+  navigationFlowService,
+} from "@/presentation/services/navigation-flow.service";
+
 import { Button } from "@/presentation/components/ui/button";
 import { Input } from "@/presentation/components/ui/input";
 import { Label } from "@/presentation/components/ui/label";
@@ -37,14 +40,22 @@ const loginSchema = z.object({
   username: z
     .string()
     .trim()
-    .min(3, "El usuario debe tener al menos 3 caracteres"),
+    .min(
+      3,
+      "El usuario debe tener al menos 3 caracteres",
+    ),
 
   password: z
     .string()
-    .min(6, "La contraseña debe tener al menos 6 caracteres"),
+    .min(
+      6,
+      "La contraseña debe tener al menos 6 caracteres",
+    ),
 });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type LoginFormData = z.infer<
+  typeof loginSchema
+>;
 
 // ─── Tipos de navegación ──────────────────────────────────────────────────────
 
@@ -52,18 +63,6 @@ interface LoginLocationState {
   from?: {
     pathname?: string;
   };
-}
-
-// ─── Utilidades ───────────────────────────────────────────────────────────────
-
-function getDefaultRouteByRole(
-  role: "CLIENTE" | "EMPLEADO" | "ADMIN",
-): string {
-  if (role === "CLIENTE") {
-    return "/cliente";
-  }
-
-  return "/empleado";
 }
 
 // ─── Componente ───────────────────────────────────────────────────────────────
@@ -99,8 +98,8 @@ export default function LoginPage() {
   });
 
   /*
-   * Si el usuario ya inició sesión e intenta entrar nuevamente
-   * a /login, se lo envía a su ruta correspondiente.
+   * Cuando el store establece el usuario autenticado,
+   * el servicio decide la ruta de destino.
    */
   useEffect(() => {
     if (!user) {
@@ -108,12 +107,19 @@ export default function LoginPage() {
     }
 
     const destination =
-      protectedRoute ?? getDefaultRouteByRole(user.rol);
+      navigationFlowService.getPostLoginDestination({
+        role: user.rol,
+        protectedRoute,
+      });
 
     navigate(destination, {
       replace: true,
     });
-  }, [user, protectedRoute, navigate]);
+  }, [
+    user,
+    protectedRoute,
+    navigate,
+  ]);
 
   async function onSubmit(
     data: LoginFormData,
@@ -127,16 +133,18 @@ export default function LoginPage() {
       });
 
       /*
-       * No navegamos manualmente aquí.
-       * Cuando el store actualiza user, el useEffect realiza
-       * la redirección según la ruta anterior o el rol.
+       * No navegamos aquí.
+       * El store actualiza user y el useEffect
+       * ejecuta la redirección.
        */
     } catch {
       /*
-       * El store ya convierte y guarda el error.
+       * El store guarda el error.
        */
     }
   }
+
+  // Aquí continúa el return actual de tu página.
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-100 px-4 py-8 sm:px-6">

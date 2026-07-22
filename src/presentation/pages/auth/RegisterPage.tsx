@@ -191,13 +191,12 @@ export default function RegisterPage() {
           </div>
 
           <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-            Crear cuenta de cliente
+            Registrate con nosotros 
           </CardTitle>
 
           <CardDescription className="mt-2 text-sm leading-6 text-slate-600">
-            Regístrate para gestionar tus vehículos,
-            solicitar citas y consultar los servicios del
-            taller.
+            Regístrate para gestionar tus vehículos, recibir actualizaciones,
+            solicitar citas, consultar los servicios y recibir ofertas de nuestro taller.
           </CardDescription>
         </CardHeader>
 

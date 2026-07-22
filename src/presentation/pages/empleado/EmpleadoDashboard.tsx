@@ -140,19 +140,8 @@ export default function EmpleadoDashboard() {
             icon={<Stethoscope className="h-6 w-6" />}
           />
 
-          <DashboardCard
-            title="Servicios de la Orden"
-            description="Gestiona los servicios realizados en cada orden."
-            to="/empleado/servicios"
-            icon={<Wrench className="h-6 w-6" />}
-          />
-
-          <DashboardCard
-            title="Recomendaciones"
-            description="Registra recomendaciones de mantenimiento para los clientes."
-            to="/empleado/recomendaciones"
-            icon={<ShieldCheck className="h-6 w-6" />}
-          />
+          
+          
         </div>
       </section>
     </main>

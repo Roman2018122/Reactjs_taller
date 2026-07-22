@@ -1,4 +1,3 @@
-
 // src/presentation/components/AppShell.tsx
 
 import {
@@ -14,19 +13,24 @@ import {
 } from "react-router-dom";
 
 import {
-  Car,
   CalendarDays,
+  Car,
   ClipboardList,
-  LogIn,
   LogOut,
+  ShieldCheck,
   Stethoscope,
   User,
   Users,
   Wrench,
 } from "lucide-react";
 
-import { useAuthStore } from "@/presentation/store/auth.store";
-import { Button } from "@/presentation/components/ui/button";
+import {
+  useAuthStore,
+} from "@/presentation/store/auth.store";
+
+import {
+  Button,
+} from "@/presentation/components/ui/button";
 
 interface NavigationItem {
   label: string;
@@ -40,11 +44,29 @@ function getNavLinkClass({
   isActive: boolean;
 }): string {
   return [
-    "flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
     isActive
       ? "bg-blue-600 text-white shadow-sm"
       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
   ].join(" ");
+}
+
+function getDashboardPath(
+  rol: string | undefined,
+): string {
+  switch (rol) {
+    case "CLIENTE":
+      return "/cliente";
+
+    case "EMPLEADO":
+      return "/empleado";
+
+    case "ADMIN":
+      return "/admin";
+
+    default:
+      return "/";
+  }
 }
 
 export default function AppShell() {
@@ -70,26 +92,10 @@ export default function AppShell() {
     if (!isInitialized) {
       void loadSession();
     }
-  }, [isInitialized, loadSession]);
-
-  const publicNavigation: NavigationItem[] = [
-    {
-      label: "Inicio",
-      path: "/",
-    },
-    {
-      label: "Nosotros",
-      path: "/nosotros",
-    },
-    {
-      label: "Servicios",
-      path: "/servicios",
-    },
-    {
-      label: "Contacto",
-      path: "/contacto",
-    },
-  ];
+  }, [
+    isInitialized,
+    loadSession,
+  ]);
 
   const clienteNavigation: NavigationItem[] = [
     {
@@ -99,43 +105,44 @@ export default function AppShell() {
     {
       label: "Mi perfil",
       path: "/cliente/perfil",
-      icon: <User className="h-4 w-4" />,
+      icon: (
+        <User className="h-4 w-4" />
+      ),
     },
     {
       label: "Mis vehículos",
       path: "/cliente/vehiculos",
-      icon: <Car className="h-4 w-4" />,
+      icon: (
+        <Car className="h-4 w-4" />
+      ),
     },
     {
       label: "Mis citas",
       path: "/cliente/citas",
-      icon: <CalendarDays className="h-4 w-4" />,
+      icon: (
+        <CalendarDays className="h-4 w-4" />
+      ),
     },
-    {
-      label: "Mis órdenes",
-      path: "/cliente/ordenes",
-      icon: <ClipboardList className="h-4 w-4" />,
-    },
-    {
-      label: "Diagnósticos",
-      path: "/cliente/diagnosticos",
-      icon: <Stethoscope className="h-4 w-4" />,
-    },
-    {
-      label: "Servicios realizados",
-      path: "/cliente/servicios",
-      icon: <Wrench className="h-4 w-4" />,
-    },
-    {
-      label: "Recomendaciones",
-      path: "/cliente/recomendaciones",
-    },
-
     {
       label: "Mis órdenes",
       path: "/cliente/ordenes",
       icon: (
         <ClipboardList className="h-4 w-4" />
+      ),
+    },
+   
+    {
+      label: "Servicios realizados",
+      path: "/cliente/servicios",
+      icon: (
+        <Wrench className="h-4 w-4" />
+      ),
+    },
+    {
+      label: "Recomendaciones",
+      path: "/cliente/recomendaciones",
+      icon: (
+        <ShieldCheck className="h-4 w-4" />
       ),
     },
   ];
@@ -148,44 +155,62 @@ export default function AppShell() {
     {
       label: "Clientes",
       path: "/empleado/clientes",
-      icon: <Users className="h-4 w-4" />,
+      icon: (
+        <Users className="h-4 w-4" />
+      ),
     },
     {
       label: "Vehículos",
       path: "/empleado/vehiculos",
-      icon: <Car className="h-4 w-4" />,
+      icon: (
+        <Car className="h-4 w-4" />
+      ),
     },
     {
       label: "Citas",
       path: "/empleado/citas",
-      icon: <CalendarDays className="h-4 w-4" />,
-    },
-    {
-      label: "Órdenes",
-      path: "/empleado/ordenes",
-      icon: <ClipboardList className="h-4 w-4" />,
-    },
-    {
-      label: "Diagnósticos",
-      path: "/empleado/diagnosticos",
-      icon: <Stethoscope className="h-4 w-4" />,
-    },
-    {
-      label: "Servicios de la orden",
-      path: "/empleado/servicios",
-      icon: <Wrench className="h-4 w-4" />,
-    },
-    {
-      label: "Recomendaciones",
-      path: "/empleado/recomendaciones",
+      icon: (
+        <CalendarDays className="h-4 w-4" />
+      ),
     },
     {
       label: "Órdenes de trabajo",
       path: "/empleado/ordenes",
-      icon: <ClipboardList className="h-4 w-4" />,
+      icon: (
+        <ClipboardList className="h-4 w-4" />
+      ),
+    },
+    {
+      label: "Diagnósticos",
+      path: "/empleado/diagnosticos",
+      icon: (
+        <Stethoscope className="h-4 w-4" />
+      ),
+    },
+    {
+      label: "Servicios de la orden",
+      path: "/empleado/servicios",
+      icon: (
+        <Wrench className="h-4 w-4" />
+      ),
+    },
+    {
+      label: "Recomendaciones",
+      path: "/empleado/recomendaciones",
+      icon: (
+        <ShieldCheck className="h-4 w-4" />
+      ),
     },
   ];
 
+  /*
+   * Por ahora se conserva la misma navegación
+   * del empleado para el administrador porque
+   * así funcionaba en tu componente original.
+   *
+   * Cuando tengas las rutas definitivas del
+   * administrador, crea adminNavigation.
+   */
   let privateNavigation: NavigationItem[] = [];
 
   if (user?.rol === "CLIENTE") {
@@ -199,136 +224,121 @@ export default function AppShell() {
     privateNavigation = empleadoNavigation;
   }
 
+  const dashboardPath =
+    getDashboardPath(
+      user?.rol,
+    );
+
   async function handleLogout(): Promise<void> {
     await logout();
 
-    navigate("/login", {
-      replace: true,
-    });
+    navigate(
+      "/",
+      {
+        replace: true,
+      },
+    );
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
-        <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
-          {/* Marca */}
-          <Link
-            to="/"
-            className="flex items-center gap-3 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
-              <Wrench className="h-5 w-5" />
-            </div>
-
-            <div>
-              <span className="block text-base font-bold tracking-tight text-slate-900">
-                AutoCenter
-              </span>
-
-              <span className="hidden text-xs text-slate-500 sm:block">
-                Gestión de vehículos y servicios
-              </span>
-            </div>
-          </Link>
-
-          {/* Navegación pública */}
-          <nav className="order-3 flex w-full flex-wrap items-center gap-1 border-t border-slate-200 pt-3 md:order-none md:w-auto md:border-0 md:pt-0">
-            {publicNavigation.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={getNavLinkClass}
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-
-          <div className="flex-1" />
-
-          {/* Usuario */}
-          {user ? (
-            <div className="flex items-center gap-3">
-              <div className="hidden border-r border-slate-200 pr-3 text-right sm:block">
-                <p className="max-w-44 truncate text-sm font-semibold text-slate-900">
-                  {user.nombre_completo ||
-                    user.username}
-                </p>
-
-                <p className="text-xs font-medium uppercase tracking-wide text-blue-600">
-                  {user.rol}
-                </p>
+    <div className="flex min-h-screen bg-slate-50">
+      {/* Menú lateral privado */}
+      {user && (
+        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white md:flex">
+          {/* Marca privada */}
+          <div className="border-b border-slate-200 p-5">
+            <Link
+              to={dashboardPath}
+              className="flex items-center gap-3 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+            >
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
+                <Wrench className="h-5 w-5" />
               </div>
 
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleLogout}
-                className="border-slate-300 bg-white text-slate-700 shadow-sm hover:border-red-200 hover:bg-red-50 hover:text-red-700"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Cerrar sesión
-              </Button>
-            </div>
-          ) : (
-            <Button
-              asChild
-              size="sm"
-              className="bg-blue-600 font-semibold text-white shadow-sm hover:bg-blue-700"
-            >
-              <Link to="/login">
-                <LogIn className="mr-2 h-4 w-4" />
-                Iniciar sesión
-              </Link>
-            </Button>
-          )}
-        </div>
-      </header>
+              <div className="min-w-0">
+                <span className="block truncate text-base font-bold tracking-tight text-slate-900">
+                  AutoCenter
+                </span>
 
-      <div className="flex w-full flex-1">
-        {/* Navegación privada */}
-        {user && (
-          <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white px-4 py-6 md:block">
-            <div className="sticky top-24">
-              <p className="mb-3 px-3 text-xs font-bold uppercase tracking-wider text-slate-400">
-                Navegación
-              </p>
+                <span className="block truncate text-xs text-slate-500">
+                  Gestión del taller
+                </span>
+              </div>
+            </Link>
+          </div>
 
-              <nav className="space-y-1">
-                {privateNavigation.map((item) => (
+          {/* Navegación */}
+          <div className="flex-1 overflow-y-auto px-4 py-6">
+            <p className="mb-3 px-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+              Navegación
+            </p>
+
+            <nav className="space-y-1">
+              {privateNavigation.map(
+                (item) => (
                   <NavLink
                     key={item.path}
                     to={item.path}
                     end={
-                      item.path === "/cliente" ||
-                      item.path === "/empleado"
+                      item.path ===
+                      dashboardPath
                     }
-                    className={getNavLinkClass}
+                    className={
+                      getNavLinkClass
+                    }
                   >
                     {item.icon}
-                    {item.label}
-                  </NavLink>
-                ))}
-              </nav>
-            </div>
-          </aside>
-        )}
 
-        {/* Contenido de la ruta */}
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
+                    <span>
+                      {item.label}
+                    </span>
+                  </NavLink>
+                ),
+              )}
+            </nav>
+          </div>
+
+          {/* Usuario y sesión */}
+          <div className="border-t border-slate-200 p-4">
+            <div className="mb-4 rounded-lg bg-slate-50 p-3">
+              <p className="truncate text-sm font-semibold text-slate-900">
+                {user.nombre_completo ||
+                  user.username}
+              </p>
+
+              <p className="mt-1 text-xs font-medium uppercase tracking-wide text-blue-600">
+                {user.rol}
+              </p>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              className="w-full justify-start border-slate-300 bg-white text-slate-700 shadow-sm hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+
+              Cerrar sesión
+            </Button>
+          </div>
+        </aside>
+      )}
+
+      {/* Contenido principal */}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <main className="min-w-0 flex-1 overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
           <Outlet />
         </main>
-      </div>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white px-4 py-5 text-center text-sm text-slate-500">
-        <p>
-          AutoCenter © {new Date().getFullYear()}
-        </p>
-      </footer>
+        <footer className="border-t border-slate-200 bg-white px-4 py-5 text-center text-sm text-slate-500">
+          <p>
+            AutoCenter ©{" "}
+            {new Date().getFullYear()}
+          </p>
+        </footer>
+      </div>
     </div>
   );
 }
-

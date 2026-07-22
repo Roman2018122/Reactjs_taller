@@ -125,12 +125,6 @@ export default function ClienteDashboard() {
             icon={<ClipboardList className="h-6 w-6" />}
           />
 
-          <DashboardCard
-            title="Diagnósticos"
-            description="Visualiza los diagnósticos realizados."
-            to="/cliente/diagnosticos"
-            icon={<Stethoscope className="h-6 w-6" />}
-          />
 
           <DashboardCard
             title="Servicios Realizados"

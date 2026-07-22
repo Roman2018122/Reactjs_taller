@@ -7,7 +7,10 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  serviceRequestStorage,
+} from "@/infrastructure/storage/service-request-storage"; 
+import { useNavigate,  useLocation } from "react-router-dom";
 
 import type { CitaFormData } from "@/domain/entities/cita.entity";
 import type { Servicio } from "@/domain/entities/servicio.entity";
@@ -35,6 +38,14 @@ const initialFormData: CitaFormData = {
   observaciones_cliente: "",
 };
 
+interface CitaFormLocationState {
+    vehiculoId?: number;
+    servicioId?: number;
+    servicioNombre?: string;
+    fromServiceRequest?: boolean;
+    returnTo?: string;
+
+  }
 function formatearPrecio(
   precio: string | null,
 ): string {
@@ -67,6 +78,18 @@ function obtenerFechaMinima(): string {
 
 export default function CitaFormPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  
+
+  const navigationState =
+    location.state as
+      | CitaFormLocationState
+      | null;
+
+  const returnTo =
+  navigationState?.returnTo ??
+  "/cliente/citas";
 
   const [formData, setFormData] =
     useState<CitaFormData>(initialFormData);
@@ -148,6 +171,23 @@ export default function CitaFormPage() {
     getServicios,
     getVehiculos,
   ]);
+
+  useEffect(() => {
+    if (!navigationState) {
+      return;
+    }
+
+    setFormData((current) => ({
+      ...current,
+      vehiculo:
+        navigationState.vehiculoId ??
+        current.vehiculo,
+
+      servicio:
+        navigationState.servicioId ??
+        current.servicio,
+    }));
+  }, [navigationState]);
 
   const handleChange = (
     event: ChangeEvent<
@@ -245,15 +285,22 @@ export default function CitaFormPage() {
     });
 
     if (citaCreada) {
-      navigate("/cliente/citas");
+      serviceRequestStorage.clear();
+
+      navigate("/cliente/citas", {
+        replace: true,
+      });
     }
   };
 
   const handleCancel = (): void => {
     clearCitaError();
-    navigate("/cliente/citas");
-  };
 
+    navigate(returnTo, {
+      replace: true,
+    });
+  };
+  
   const formularioCargando =
     isLoadingCita ||
     isLoadingVehiculos ||
@@ -280,7 +327,7 @@ export default function CitaFormPage() {
 
           <CardDescription className="text-slate-600">
             Complete los campos necesarios para
-            enviar su solicitud al taller.
+            enviar su solicitud al taller y posteriormente noc comunicaremos con usted.
           </CardDescription>
         </CardHeader>
 
@@ -315,6 +362,17 @@ export default function CitaFormPage() {
             </p>
           )}
 
+          {navigationState?.fromServiceRequest && (
+            <div className="mb-5 rounded-lg border border-blue-200 bg-blue-50 p-4">
+              <p className="font-medium text-blue-900">
+                Servicio seleccionado
+              </p>
+
+              <p className="text-sm text-blue-700">
+                {navigationState.servicioNombre}
+              </p>
+            </div>
+          )}
           <form
             onSubmit={handleSubmit}
             className="space-y-5"

@@ -23,7 +23,7 @@ interface VehiculoState {
   create: (
     data: VehiculoFormData,
   ) => Promise<boolean>;
-
+  
   update: (
     id: number,
     data: VehiculoFormData,
