@@ -201,7 +201,7 @@ export default function VehiculosPage() {
                     </th>
 
                     <th className="whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
-                      Cliente
+                      Propietario
                     </th>
 
                     <th className="whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
