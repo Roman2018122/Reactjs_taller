@@ -22,23 +22,24 @@ jobs:
       - name: Crear variables de producción
         run: |
           printf '%s\n' "${{ secrets.REACT_ENV }}" > .env.production
-
-          echo "Contenido de .env.production:"
-          cat .env.production
+          echo "Archivo .env.production creado"
 
       - name: Instalar dependencias
         run: npm ci
 
       - name: Construir aplicación
-        env:
-          VITE_API_BASE_URL: http://165.227.99.251/api
-          VITE_APP_NAME: TorresReactApp
         run: npm run build
 
       - name: Verificar URL compilada
         run: |
           echo "Buscando URL de API en dist..."
-          grep -R -o "http://165.227.99.251[^\"']*" dist/assets || true
+
+          if ! grep -R -q "http://autocenter-api.uaeftt-ute.site/api" dist; then
+            echo "No se encontró la URL correcta de la API en el build"
+            exit 1
+          fi
+
+          echo "URL de API encontrada correctamente"
 
       - name: Subir build al VPS
         uses: appleboy/scp-action@v0.1.7
@@ -69,7 +70,8 @@ jobs:
             systemctl reload nginx
 
             HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-              http://127.0.0.1:8080)
+              -H "Host: autocenter.uaeftt-ute.site" \
+              http://127.0.0.1)
 
             echo "Código HTTP recibido: $HTTP_STATUS"
 
