@@ -18,7 +18,6 @@ import {
 
 import {
   ArrowRight,
-  Clock3,
   Loader2,
   Search,
   Wrench,
@@ -94,35 +93,6 @@ function formatCurrency(
       currency: "USD",
     },
   ).format(numericValue);
-}
-
-function formatDuration(
-  value: number | null,
-): string {
-  if (
-    value === null ||
-    value <= 0
-  ) {
-    return "Duración por confirmar";
-  }
-
-  if (value < 60) {
-    return `${value} minutos`;
-  }
-
-  const hours = Math.floor(
-    value / 60,
-  );
-
-  const minutes = value % 60;
-
-  if (minutes === 0) {
-    return hours === 1
-      ? "1 hora"
-      : `${hours} horas`;
-  }
-
-  return `${hours} h ${minutes} min`;
 }
 
 function extractServicios(
@@ -312,226 +282,208 @@ export default function ServiciosPublicPage() {
     </section>
 
     {/* Catálogo */}
-    <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
-        {/* Panel lateral */}
-        <aside className="lg:sticky lg:top-24 lg:self-start">
-          <Card className="border-slate-200 bg-white shadow-sm">
-            <CardContent className="p-5">
-              <div>
-                <p className="font-semibold text-slate-900">
-                  Buscar servicios
-                </p>
+    `<section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      {/* Barra de búsqueda */}
+      <Card className="border-slate-200 bg-white shadow-sm">
+        <CardContent className="p-5 sm:p-6">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
 
-                <p className="mt-1 text-sm leading-6 text-slate-500">
-                  Busca por nombre o descripción.
-                </p>
+            <Input
+              aria-label="Buscar servicios"
+              className="h-12 border-slate-300 bg-white pl-12 pr-4 text-slate-900 shadow-sm placeholder:text-slate-400 focus-visible:border-blue-500 focus-visible:ring-blue-500/20"
+              placeholder="Buscar por nombre o descripción..."
+              value={search}
+              onChange={(event) => {
+                setSearch(
+                  event.target.value,
+                );
+              }}
+            />
+          </div>
+
+          {search && (
+            <div className="mt-4 flex justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                className="border-slate-300 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                onClick={() => {
+                  setSearch("");
+                }}
+              >
+                Limpiar búsqueda
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Cargando */}
+      {loading && (
+        <Card className="mt-6 border-slate-200 bg-white shadow-sm">
+          <CardContent className="flex min-h-64 flex-col items-center justify-center gap-4 p-8 text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+
+            <div>
+              <p className="font-semibold text-slate-900">
+                Cargando servicios
+              </p>
+
+              <p className="mt-1 text-sm text-slate-500">
+                Estamos consultando el catálogo del taller.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Error */}
+      {!loading && error && (
+        <Card className="mt-6 border-red-200 bg-white shadow-sm">
+          <CardContent className="flex min-h-64 flex-col items-center justify-center p-8 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
+              <Wrench className="h-7 w-7" />
+            </div>
+
+            <p className="mt-4 font-semibold text-red-700">
+              No se pudieron cargar los servicios
+            </p>
+
+            <p className="mt-2 max-w-md text-sm leading-6 text-slate-600">
+              {error}
+            </p>
+
+            <Button
+              type="button"
+              className="mt-5 bg-blue-600 font-semibold text-white hover:bg-blue-700"
+              onClick={() => {
+                void loadServicios();
+              }}
+            >
+              Intentar nuevamente
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Sin resultados */}
+      {!loading &&
+        !error &&
+        serviciosFiltrados.length === 0 && (
+          <Card className="mt-6 border-slate-200 bg-white shadow-sm">
+            <CardContent className="flex min-h-64 flex-col items-center justify-center p-8 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                <Search className="h-7 w-7" />
               </div>
 
-              <div className="relative mt-4">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <p className="mt-4 font-semibold text-slate-900">
+                No se encontraron servicios
+              </p>
 
-                <Input
-                  aria-label="Buscar servicios"
-                  className="h-11 border-slate-300 bg-white pl-10 text-slate-900 shadow-sm placeholder:text-slate-400 focus-visible:border-blue-500 focus-visible:ring-blue-500/20"
-                  placeholder="Ej. cambio de aceite"
-                  value={search}
-                  onChange={(event) => {
-                    setSearch(
-                      event.target.value,
-                    );
-                  }}
-                />
-              </div>
-
-              {!loading && !error && (
-                <div className="mt-4 rounded-lg border border-blue-100 bg-blue-50 p-3">
-                  <p className="text-sm font-medium text-blue-900">
-                    {serviciosFiltrados.length}{" "}
-                    {serviciosFiltrados.length === 1
-                      ? "servicio disponible"
-                      : "servicios disponibles"}
-                  </p>
-                </div>
-              )}
+              <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+                No existen servicios que coincidan con la búsqueda ingresada.
+              </p>
 
               {search && (
                 <Button
                   type="button"
                   variant="outline"
-                  className="mt-4 w-full border-slate-300 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                  className="mt-5 border-slate-300 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
                   onClick={() => {
                     setSearch("");
                   }}
                 >
-                  Limpiar búsqueda
+                  Mostrar todos
                 </Button>
               )}
             </CardContent>
           </Card>
-        </aside>
+        )}
 
-        {/* Resultados */}
-        <div className="min-w-0">
-          {loading && (
-            <Card className="border-slate-200 bg-white shadow-sm">
-              <CardContent className="flex min-h-64 flex-col items-center justify-center gap-4 p-8 text-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      {/* Tarjetas */}
+      {!loading &&
+        !error &&
+        serviciosFiltrados.length > 0 && (
+          <div className="mt-7">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              Servicios disponibles
+            </h2>
 
-                <div>
-                  <p className="font-semibold text-slate-900">
-                    Cargando servicios
-                  </p>
+            <p className="mt-2 text-sm text-slate-600">
+              Selecciona el servicio que necesita tu vehículo.
+            </p>
 
-                  <p className="mt-1 text-sm text-slate-500">
-                    Estamos consultando el catálogo del taller.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+            <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {serviciosFiltrados.map(
+                (servicio) => (
+                  <Card
+                    key={servicio.id}
+                    className="group flex h-full flex-col overflow-hidden border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg"
+                  >
+                    <CardContent className="flex flex-1 flex-col p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-600 transition-colors group-hover:bg-blue-600 group-hover:text-white">
+                          <Wrench className="h-6 w-6" />
+                        </div>
 
-          {!loading && error && (
-            <Card className="border-red-200 bg-white shadow-sm">
-              <CardContent className="flex min-h-64 flex-col items-center justify-center p-8 text-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
-                  <Wrench className="h-7 w-7" />
-                </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold uppercase tracking-wide text-blue-600">
+                            Servicio automotriz
+                          </p>
 
-                <p className="mt-4 font-semibold text-red-700">
-                  No se pudieron cargar los servicios
-                </p>
+                          <h3 className="mt-1 text-xl font-bold leading-7 text-slate-950">
+                            {servicio.nombre}
+                          </h3>
+                        </div>
+                      </div>
 
-                <p className="mt-2 max-w-md text-sm leading-6 text-slate-600">
-                  {error}
-                </p>
+                      <div className="mt-5 flex-1">
+                        <p className="text-sm font-semibold text-slate-900">
+                          Descripción
+                        </p>
 
-                <Button
-                  type="button"
-                  className="mt-5 bg-blue-600 font-semibold text-white hover:bg-blue-700"
-                  onClick={() => {
-                    void loadServicios();
-                  }}
-                >
-                  Intentar nuevamente
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+                        <p className="mt-2 leading-7 text-slate-600">
+                          {servicio.descripcion ||
+                            "Servicio automotriz disponible en nuestro taller."}
+                        </p>
+                      </div>
 
-          {!loading &&
-            !error &&
-            serviciosFiltrados.length === 0 && (
-              <Card className="border-slate-200 bg-white shadow-sm">
-                <CardContent className="flex min-h-64 flex-col items-center justify-center p-8 text-center">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                    <Search className="h-7 w-7" />
-                  </div>
+                      <div className="mt-6 rounded-xl border border-blue-200 bg-blue-50 p-4">
+                        <p className="text-xs font-bold uppercase tracking-wide text-blue-700">
+                          Precio referencial
+                        </p>
 
-                  <p className="mt-4 font-semibold text-slate-900">
-                    No se encontraron servicios
-                  </p>
+                        <p className="mt-2 text-2xl font-bold text-blue-950">
+                          {formatCurrency(
+                            servicio.precio_referencial,
+                          )}
+                        </p>
+                      </div>
+                    </CardContent>
 
-                  <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
-                    No existen servicios que coincidan con la
-                    búsqueda ingresada.
-                  </p>
-
-                  {search && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="mt-5 border-slate-300 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
-                      onClick={() => {
-                        setSearch("");
-                      }}
-                    >
-                      Mostrar todos
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-          {!loading &&
-            !error &&
-            serviciosFiltrados.length > 0 && (
-              <>
-                <div className="mb-5 flex items-center justify-between gap-4">
-                  <div>
-                    <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-                      Servicios disponibles
-                    </h2>
-
-                    <p className="mt-1 text-sm text-slate-500">
-                      Selecciona el servicio que necesita tu vehículo.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid gap-5 md:grid-cols-2">
-                  {serviciosFiltrados.map(
-                    (servicio) => (
-                      <Card
-                        key={servicio.id}
-                        className="group flex h-full flex-col overflow-hidden border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg"
+                    <CardFooter className="border-t border-slate-100 bg-white p-5">
+                      <Button
+                        type="button"
+                        className="w-full bg-blue-600 font-semibold text-white shadow-sm hover:bg-blue-700"
+                        onClick={() => {
+                          handleSolicitarServicio(
+                            servicio.id,
+                            servicio.nombre,
+                          );
+                        }}
                       >
-                        <CardContent className="flex flex-1 flex-col gap-4 p-5">
-                          <div className="grid gap-3 sm:grid-cols-2">
-                            <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
-                              <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">
-                                Precio referencial
-                              </p>
+                        Solicitar servicio
 
-                              <p className="mt-2 text-lg font-bold text-blue-950">
-                                {formatCurrency(
-                                  servicio.precio_referencial,
-                                )}
-                              </p>
-                            </div>
-
-                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                              <div className="flex items-center gap-2 text-slate-500">
-                                <Clock3 className="h-4 w-4 text-blue-600" />
-
-                                <p className="text-xs font-semibold uppercase tracking-wide">
-                                  Duración
-                                </p>
-                              </div>
-
-                              <p className="mt-2 text-sm font-semibold text-slate-900">
-                                {formatDuration(
-                                  servicio.duracion_estimada,
-                                )}
-                              </p>
-                            </div>
-                          </div>
-                        </CardContent>
-
-                        <CardFooter className="border-t border-slate-100 bg-white p-5">
-                          <Button
-                            type="button"
-                            className="w-full bg-blue-600 font-semibold text-white shadow-sm hover:bg-blue-700"
-                            onClick={() => {
-                              handleSolicitarServicio(
-                                servicio.id,
-                                servicio.nombre,
-                              );
-                            }}
-                          >
-                            Solicitar servicio
-
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                    ),
-                  )}
-                </div>
-              </>
-            )}
-        </div>
-      </div>
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ),
+              )}
+            </div>
+          </div>
+        )}
     </section>
 
     {/* CTA compacto */}
