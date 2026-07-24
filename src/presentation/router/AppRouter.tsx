@@ -42,6 +42,14 @@ import ProtectedRoute from "./ProtectedRoute";
 import AppShell from "@/presentation/components/AppShell";
 import PublicLayout from "@/presentation/components/layout/PublicLayout";
 
+//Empleado
+import VehiculosPagee from "@/presentation/pages/empleado/vehiculos/VehiculosPagee";
+import ClientesPage from "@/presentation/pages/cliente/empleado/clientes/ClientesPage";
+import ClienteFormPage from "@/presentation/pages/cliente/empleado/clientes/ClienteFormPage";
+import ClienteDetallePage from "@/presentation/pages/cliente/empleado/clientes/ClienteDetallePage";
+//import ClienteEditarPage from "@/presentation/pages/cliente/empleado/clientes/ClienteEditarPage";
+
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
@@ -212,6 +220,61 @@ export default function AppRouter() {
 
           {/* Dashboard del empleado */}
           <Route
+            path="/empleado/vehiculos"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  "EMPLEADO",
+                  "ADMIN",
+                ]}
+              >
+                <VehiculosPagee />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/empleado/vehiculos/nuevo"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  "EMPLEADO",
+                  "ADMIN",
+                ]}
+              >
+                <VehiculoFormPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/empleado/vehiculos/:id"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  "EMPLEADO",
+                  "ADMIN",
+                ]}
+              >
+                <VehiculoDetallePage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/empleado/vehiculos/:id/editar"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  "EMPLEADO",
+                  "ADMIN",
+                ]}
+              >
+                <VehiculoEditarPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/empleado"
             element={
               <ProtectedRoute
@@ -224,6 +287,50 @@ export default function AppRouter() {
               </ProtectedRoute>
             }
           />
+          {/* clientes empleado */}
+          <Route
+            path="/empleado/clientes"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  "EMPLEADO",
+                  "ADMIN",
+                ]}
+              >
+                <ClientesPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/empleado/clientes/nuevo"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  "EMPLEADO",
+                  "ADMIN",
+                ]}
+              >
+                <ClienteFormPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/empleado/clientes/:id"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  "EMPLEADO",
+                  "ADMIN",
+                ]}
+              >
+                <ClienteDetallePage />
+              </ProtectedRoute>
+            }
+          />
+
+          
 
           {/* Citas del empleado */}
           <Route

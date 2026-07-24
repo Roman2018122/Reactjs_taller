@@ -1,21 +1,32 @@
-// src/domain/repositories/vehiculo.repository.ts
-
 import type {
   Vehiculo,
-  VehiculoFormData,
-} from "../entities/vehiculo.entity";
+  VehiculoCreateData,
+  VehiculoFilters,
+  VehiculosPaginatedResponse,
+  VehiculoUpdateData,
+} from "@/domain/entities/vehiculo.entity";
 
 export interface VehiculoRepository {
   getAll(): Promise<Vehiculo[]>;
 
-  getById(id: number): Promise<Vehiculo>;
+  getPaginated(
+    filters?: VehiculoFilters,
+  ): Promise<VehiculosPaginatedResponse>;
 
-  create(data: VehiculoFormData): Promise<Vehiculo>;
+  getById(
+    id: number,
+  ): Promise<Vehiculo>;
+
+  create(
+    data: VehiculoCreateData,
+  ): Promise<Vehiculo>;
 
   update(
     id: number,
-    data: VehiculoFormData,
+    data: VehiculoUpdateData,
   ): Promise<Vehiculo>;
 
-  remove(id: number): Promise<void>;
+  remove(
+    id: number,
+  ): Promise<void>;
 }
