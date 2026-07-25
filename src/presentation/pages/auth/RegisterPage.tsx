@@ -15,7 +15,6 @@ import {
   Mail,
   Phone,
   User,
-  Wrench,
 } from "lucide-react";
 
 import { useAuthStore } from "@/presentation/store/auth.store";

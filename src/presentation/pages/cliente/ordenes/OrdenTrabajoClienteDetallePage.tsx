@@ -671,7 +671,7 @@ export default function OrdenTrabajoClienteDetallePage() {
           <CardTitle className="text-xl font-bold text-slate-900">
             Valores de la orden
           </CardTitle>
-
+                  
           <CardDescription className="mt-1 text-sm leading-6 text-slate-600">
             Resumen económico de los trabajos registrados.
           </CardDescription>
