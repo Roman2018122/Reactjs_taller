@@ -8,7 +8,6 @@ import {
   Car,
   CalendarDays,
   ClipboardList,
-  Stethoscope,
   
 } from "lucide-react";
 
@@ -132,13 +131,7 @@ export default function EmpleadoDashboard() {
             icon={<ClipboardList className="h-6 w-6" />}
           />
 
-          <DashboardCard
-            title="Diagnósticos"
-            description="Registra y consulta diagnósticos de vehículos."
-            to="/empleado/diagnosticos"
-            icon={<Stethoscope className="h-6 w-6" />}
-          />
-
+          
           
           
         </div>

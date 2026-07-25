@@ -190,7 +190,7 @@ export default function InicioPage() {
                   className="border-slate-300 bg-white font-semibold text-slate-700 shadow-sm hover:border-green-300 hover:bg-green-50 hover:text-green-700"
                 >
                   <a
-                    href="https://wa.me/593999999999"
+                    href="https://wa.me/09959795677"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -555,24 +555,19 @@ export default function InicioPage() {
 
             <div className="mt-12 grid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl lg:grid-cols-[1.1fr_0.9fr]">
               {/* Espacio para mapa */}
-              <div className="relative flex min-h-[360px] items-center justify-center overflow-hidden bg-slate-200">
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-200 via-slate-100 to-blue-100" />
-
-                <div className="relative max-w-sm px-6 text-center">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg">
-                    <MapPin className="h-8 w-8" />
-                  </div>
-
-                  <h3 className="mt-5 text-xl font-bold text-slate-900">
-                    Ubicación del taller
-                  </h3>
-
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    Espacio reservado para integrar Google Maps
-                    o el mapa de ubicación de Autocenter.
-                  </p>
-                </div>
+              <div className="relative flex min-h-[360px] items-center justify-center overflow-hidden rounded-xl">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.7977353138504!2d-78.49318710000001!3d-0.1840505!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d59a620765ded5%3A0xe0b90e22ec79bf54!2sUniversidad%20UTE%20-%20Campus%20Rumipamba!5e0!3m2!1ses-419!2sec!4v1784973078301!5m2!1ses-419!2sec"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen   // ✅ en JSX/TSX debe ser booleano
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
               </div>
+
+
 
               <div className="p-6 sm:p-8 lg:p-10">
                 <h3 className="text-2xl font-bold text-slate-950">
@@ -611,7 +606,7 @@ export default function InicioPage() {
                       </p>
 
                       <a
-                        href="tel:+593999999999"
+                        href="tel:+593959795677"
                         className="mt-1 block text-sm text-slate-600 transition-colors hover:text-blue-600"
                       >
                         099 999 9999
@@ -746,61 +741,6 @@ export default function InicioPage() {
           </div>
         </section>
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-800 bg-slate-950 text-slate-300">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-3 md:items-center lg:px-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white">
-              <Wrench className="h-5 w-5" />
-            </div>
-
-            <div>
-              <p className="font-semibold text-white">
-                Autocenter
-              </p>
-
-              <p className="text-xs text-slate-400">
-                Taller para todas las marcas
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-5 text-sm md:justify-center">
-            <a
-              href="#inicio"
-              className="transition-colors hover:text-white"
-            >
-              Inicio
-            </a>
-
-            <a
-              href="#por-que-elegirnos"
-              className="transition-colors hover:text-white"
-            >
-              Nosotros
-            </a>
-
-            <Link
-              to="/servicios"
-              className="transition-colors hover:text-white"
-            >
-              Servicios
-            </Link>
-
-            <a
-              href="#contacto"
-              className="transition-colors hover:text-white"
-            >
-              Contacto
-            </a>
-          </div>
-
-          <p className="text-sm text-slate-400 md:text-right">
-            © {new Date().getFullYear()} Autocenter
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }

@@ -257,9 +257,7 @@ export default function ClientesPage() {
                           )}
                         </p>
 
-                        <p className="mt-1 text-xs text-slate-500">
-                          Cliente #{cliente.id}
-                        </p>
+                        
                       </td>
 
                       <td className="whitespace-nowrap px-4 py-4 text-sm text-slate-700">

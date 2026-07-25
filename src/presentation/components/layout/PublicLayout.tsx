@@ -23,9 +23,11 @@ export default function PublicLayout() {
             to="/"
             className="flex items-center gap-3 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
-              <Wrench className="h-5 w-5" />
-            </div>
+            <img 
+              src="/Logo.png" 
+              alt="Icono" 
+              className="h-20 w-20"
+            />
 
             <div>
               <p className="font-bold leading-none tracking-tight text-slate-950">
@@ -113,9 +115,11 @@ export default function PublicLayout() {
       <footer className="border-t border-slate-800 bg-slate-950 text-slate-300">
         <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white">
-              <Wrench className="h-4 w-4" />
-            </div>
+            <img 
+              src="/Logo.png" 
+              alt="Icono" 
+              className="h-20 w-20"
+            />
 
             <div>
               <p className="font-semibold text-white">

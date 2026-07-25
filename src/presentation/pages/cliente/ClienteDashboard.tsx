@@ -7,8 +7,7 @@ import {
   Car,
   CalendarDays,
   ClipboardList,
-  Wrench,
-  ShieldCheck,
+
 } from "lucide-react";
 
 import {
@@ -125,19 +124,7 @@ export default function ClienteDashboard() {
           />
 
 
-          <DashboardCard
-            title="Servicios Realizados"
-            description="Consulta los servicios efectuados en tus vehículos."
-            to="/cliente/servicios"
-            icon={<Wrench className="h-6 w-6" />}
-          />
-
-          <DashboardCard
-            title="Recomendaciones"
-            description="Revisa los mantenimientos recomendados."
-            to="/cliente/recomendaciones"
-            icon={<ShieldCheck className="h-6 w-6" />}
-          />
+          
         </div>
       </section>
     </main>

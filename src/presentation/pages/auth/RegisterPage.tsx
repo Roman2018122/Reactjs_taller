@@ -185,9 +185,11 @@ export default function RegisterPage() {
       <Card className="relative w-full max-w-3xl overflow-hidden border-slate-200 bg-white shadow-2xl">
         <CardHeader className="border-b border-slate-200 bg-slate-50 px-6 py-7 text-center sm:px-8">
           <div className="mb-4 flex justify-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20">
-              <Wrench className="h-7 w-7" />
-            </div>
+            <img 
+              src="/Logo.png" 
+              alt="Icono" 
+              className="h-20 w-20"
+            />
           </div>
 
           <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">

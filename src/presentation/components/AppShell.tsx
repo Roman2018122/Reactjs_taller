@@ -98,13 +98,10 @@ export default function AppShell() {
   ]);
 
   const clienteNavigation: NavigationItem[] = [
-    {
-      label: "Panel",
-      path: "/cliente",
-    },
+    
     {
       label: "Mi perfil",
-      path: "/cliente/perfil",
+      path: "/cliente",
       icon: (
         <User className="h-4 w-4" />
       ),
@@ -128,21 +125,6 @@ export default function AppShell() {
       path: "/cliente/ordenes",
       icon: (
         <ClipboardList className="h-4 w-4" />
-      ),
-    },
-   
-    {
-      label: "Servicios realizados",
-      path: "/cliente/servicios",
-      icon: (
-        <Wrench className="h-4 w-4" />
-      ),
-    },
-    {
-      label: "Recomendaciones",
-      path: "/cliente/recomendaciones",
-      icon: (
-        <ShieldCheck className="h-4 w-4" />
       ),
     },
   ];
@@ -180,37 +162,9 @@ export default function AppShell() {
         <ClipboardList className="h-4 w-4" />
       ),
     },
-    {
-      label: "Diagnósticos",
-      path: "/empleado/diagnosticos",
-      icon: (
-        <Stethoscope className="h-4 w-4" />
-      ),
-    },
-    {
-      label: "Servicios de la orden",
-      path: "/empleado/servicios",
-      icon: (
-        <Wrench className="h-4 w-4" />
-      ),
-    },
-    {
-      label: "Recomendaciones",
-      path: "/empleado/recomendaciones",
-      icon: (
-        <ShieldCheck className="h-4 w-4" />
-      ),
-    },
   ];
 
-  /*
-   * Por ahora se conserva la misma navegación
-   * del empleado para el administrador porque
-   * así funcionaba en tu componente original.
-   *
-   * Cuando tengas las rutas definitivas del
-   * administrador, crea adminNavigation.
-   */
+  
   let privateNavigation: NavigationItem[] = [];
 
   if (user?.rol === "CLIENTE") {
@@ -251,9 +205,11 @@ export default function AppShell() {
               to={dashboardPath}
               className="flex items-center gap-3 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
-                <Wrench className="h-5 w-5" />
-              </div>
+              <img 
+                src="/Logo.png" 
+                alt="Icono" 
+                className="h-20 w-20"
+              />
 
               <div className="min-w-0">
                 <span className="block truncate text-base font-bold tracking-tight text-slate-900">

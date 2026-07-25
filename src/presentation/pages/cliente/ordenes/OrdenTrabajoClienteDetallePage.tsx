@@ -661,19 +661,7 @@ export default function OrdenTrabajoClienteDetallePage() {
 
             <Separator className="bg-slate-200" />
 
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-sm font-semibold text-slate-800">
-                Cita relacionada
-              </p>
-
-              <p className="mt-1 text-sm text-slate-600">
-                {
-                  orden.cita !== null
-                    ? `Cita #${orden.cita}`
-                    : "No existe una cita asociada"
-                }
-              </p>
-            </div>
+            
           </CardContent>
         </Card>
       </section>
