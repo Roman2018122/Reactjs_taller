@@ -1,10 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   useNavigate,
   useParams,
 } from "react-router-dom";
 
 import { useClienteStore } from "@/presentation/store/cliente.store";
+import { toast } from "@/presentation/store/toast.store";
+import ConfirmDeleteDialog from "@/presentation/components/common/ConfirmDeleteDialog";
 
 const formatearFecha = (
   fecha: string,
@@ -37,6 +39,9 @@ export default function ClienteDetallePage() {
 
   const clienteId = Number(id);
 
+  const [deleteDialogOpen, setDeleteDialogOpen] =
+    useState(false);
+
   useEffect(() => {
     if (
       !Number.isInteger(clienteId) ||
@@ -66,20 +71,18 @@ export default function ClienteDetallePage() {
     );
   };
 
-  const handleEliminar =
-    async (): Promise<void> => {
+  const handleEliminarClick =
+    (): void => {
       if (!clienteSeleccionado) {
         return;
       }
 
-      const nombreCompleto =
-        `${clienteSeleccionado.nombres} ${clienteSeleccionado.apellidos}`.trim();
+      setDeleteDialogOpen(true);
+    };
 
-      const confirmado = window.confirm(
-        `¿Está seguro de eliminar al cliente ${nombreCompleto}?`,
-      );
-
-      if (!confirmado) {
+  const handleConfirmDelete =
+    async (): Promise<void> => {
+      if (!clienteSeleccionado) {
         return;
       }
 
@@ -87,8 +90,15 @@ export default function ClienteDetallePage() {
         clienteSeleccionado.id,
       );
 
+      setDeleteDialogOpen(false);
+
       if (eliminado) {
+        toast.success("Cliente eliminado correctamente.");
         navigate("/empleado/clientes");
+      } else {
+        toast.error(
+          "No se puede eliminar el cliente porque tiene vehículos, citas u órdenes asociadas.",
+        );
       }
     };
 
@@ -229,7 +239,7 @@ export default function ClienteDetallePage() {
             type="button"
             disabled={loading}
             onClick={() => {
-              void handleEliminar();
+              handleEliminarClick();
             }}
             className="rounded-lg border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
@@ -438,6 +448,24 @@ export default function ClienteDetallePage() {
           </div>
         </section>
       )}
+
+      <ConfirmDeleteDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Eliminar cliente"
+        description={
+          clienteSeleccionado
+            ? `¿Estás seguro de que deseas eliminar al cliente ${`${clienteSeleccionado.nombres} ${clienteSeleccionado.apellidos}`.trim()}? Esta acción no se puede deshacer.`
+            : ""
+        }
+        loading={loading}
+        onConfirm={() => {
+          void handleConfirmDelete();
+        }}
+        onCancel={() => {
+          setDeleteDialogOpen(false);
+        }}
+      />
     </main>
   );
 }

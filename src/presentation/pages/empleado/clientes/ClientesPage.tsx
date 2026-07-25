@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -10,20 +11,42 @@ import type {
 } from "@/domain/entities/cliente.entity";
 
 import { useClienteStore } from "@/presentation/store/cliente.store";
+import { toast } from "@/presentation/store/toast.store";
+import ConfirmDeleteDialog from "@/presentation/components/common/ConfirmDeleteDialog";
+
+type TipoClienteFiltro =
+  | "TODOS"
+  | "PORTAL"
+  | "PRESENCIAL";
 
 const obtenerNombreCompleto = (
   cliente: Cliente,
 ): string => {
-  const nombreCompleto =
-    `${cliente.nombres} ${cliente.apellidos}`.trim();
+  const nombreCliente =
+    `${cliente.nombres ?? ""} ${cliente.apellidos ?? ""}`.trim();
 
-  if (nombreCompleto) {
-    return nombreCompleto;
+  if (nombreCliente) {
+    return nombreCliente;
+  }
+
+  const nombreUsuario =
+    cliente.usuario_detalle?.nombre_completo?.trim();
+
+  if (nombreUsuario) {
+    return nombreUsuario;
+  }
+
+  const nombresUsuario =
+    `${cliente.usuario_detalle?.first_name ?? ""} ${
+      cliente.usuario_detalle?.last_name ?? ""
+    }`.trim();
+
+  if (nombresUsuario) {
+    return nombresUsuario;
   }
 
   return `Cliente ${cliente.id}`;
 };
-
 const obtenerTipoCliente = (
   cliente: Cliente,
 ): string => {
@@ -37,7 +60,6 @@ export default function ClientesPage() {
 
   const {
     clientes,
-    count,
     loading,
     error,
     getClientes,
@@ -47,6 +69,17 @@ export default function ClientesPage() {
 
   const [busqueda, setBusqueda] =
     useState("");
+
+  const [
+    tipoFiltro,
+    setTipoFiltro,
+  ] = useState<TipoClienteFiltro>("TODOS");
+
+  const [deleteDialogOpen, setDeleteDialogOpen] =
+    useState(false);
+
+  const [clienteToDelete, setClienteToDelete] =
+    useState<Cliente | null>(null);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -62,6 +95,23 @@ export default function ClientesPage() {
     busqueda,
     getClientes,
   ]);
+
+  const clientesFiltrados =
+    useMemo(() => {
+      if (tipoFiltro === "TODOS") {
+        return clientes;
+      }
+
+      if (tipoFiltro === "PORTAL") {
+        return clientes.filter(
+          (c) => c.usuario !== null,
+        );
+      }
+
+      return clientes.filter(
+        (c) => c.usuario === null,
+      );
+    }, [clientes, tipoFiltro]);
 
   const handleCrear = (): void => {
     navigate("/empleado/clientes/nuevo");
@@ -83,21 +133,24 @@ export default function ClientesPage() {
     );
   };
 
-  const handleEliminar = async (
+  const handleEliminarClick = (
     cliente: Cliente,
-  ): Promise<void> => {
-    const nombre =
-      obtenerNombreCompleto(cliente);
+  ): void => {
+    setClienteToDelete(cliente);
+    setDeleteDialogOpen(true);
+  };
 
-    const confirmado = window.confirm(
-      `¿Está seguro de eliminar al cliente ${nombre}?`,
-    );
-
-    if (!confirmado) {
+  const handleConfirmDelete = async (): Promise<void> => {
+    if (!clienteToDelete) {
       return;
     }
 
-    await deleteCliente(cliente.id);
+    await deleteCliente(clienteToDelete.id);
+
+    setDeleteDialogOpen(false);
+    setClienteToDelete(null);
+
+    toast.success("Cliente eliminado correctamente.");
   };
 
   return (
@@ -150,9 +203,53 @@ export default function ClientesPage() {
           <p className="whitespace-nowrap text-sm text-slate-600">
             Total:{" "}
             <span className="font-semibold text-slate-900">
-              {count}
+              {clientesFiltrados.length}
             </span>
           </p>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setTipoFiltro("TODOS");
+            }}
+            className={
+              tipoFiltro === "TODOS"
+                ? "rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                : "rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+            }
+          >
+            Todos
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setTipoFiltro("PORTAL");
+            }}
+            className={
+              tipoFiltro === "PORTAL"
+                ? "rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                : "rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+            }
+          >
+            Portal web
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setTipoFiltro("PRESENCIAL");
+            }}
+            className={
+              tipoFiltro === "PRESENCIAL"
+                ? "rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                : "rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+            }
+          >
+            Presencial
+          </button>
         </div>
       </section>
 
@@ -207,7 +304,7 @@ export default function ClientesPage() {
           </section>
         )}
 
-      {clientes.length > 0 && (
+      {clientesFiltrados.length > 0 && (
         <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200">
@@ -244,7 +341,7 @@ export default function ClientesPage() {
               </thead>
 
               <tbody className="divide-y divide-slate-200 bg-white">
-                {clientes.map(
+                {clientesFiltrados.map(
                   (cliente) => (
                     <tr
                       key={cliente.id}
@@ -255,10 +352,6 @@ export default function ClientesPage() {
                           {obtenerNombreCompleto(
                             cliente,
                           )}
-                        </p>
-
-                        <p className="mt-1 text-xs text-slate-500">
-                          Cliente #{cliente.id}
                         </p>
                       </td>
 
@@ -337,7 +430,7 @@ export default function ClientesPage() {
                             type="button"
                             disabled={loading}
                             onClick={() => {
-                              void handleEliminar(
+                              handleEliminarClick(
                                 cliente,
                               );
                             }}
@@ -355,6 +448,23 @@ export default function ClientesPage() {
           </div>
         </section>
       )}
+      <ConfirmDeleteDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Eliminar cliente"
+        description={
+          clienteToDelete
+            ? `¿Estás seguro de que deseas eliminar al cliente ${obtenerNombreCompleto(clienteToDelete)}? Esta acción no se puede deshacer.`
+            : ""
+        }
+        loading={loading}
+        onConfirm={() => {
+          void handleConfirmDelete();
+        }}
+        onCancel={() => {
+          setClienteToDelete(null);
+        }}
+      />
     </main>
   );
 }

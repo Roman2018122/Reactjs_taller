@@ -175,3 +175,14 @@ export interface OrdenTrabajoFilters {
 export interface UpdateOrdenTrabajoEstadoData {
   estado: EstadoOrdenTrabajo;
 }
+
+export interface CrearOrdenSinCitaData {
+  vehiculo: number;
+  cliente: number;
+  motivo_ingreso: string;
+  observaciones_recepcion?: string;
+  kilometraje_ingreso?: number | null;
+  fecha_estimada_entrega?: string | null;
+  empleado_responsable?: number | null;
+  cita: null;
+}

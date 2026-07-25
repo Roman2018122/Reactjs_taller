@@ -19,6 +19,8 @@ import {
 import {
   useVehiculoStore,
 } from "@/presentation/store/vehiculo.store";
+import { toast } from "@/presentation/store/toast.store";
+import ConfirmDeleteDialog from "@/presentation/components/common/ConfirmDeleteDialog";
 
 export default function VehiculosPage() {
   const navigate = useNavigate();
@@ -39,6 +41,12 @@ export default function VehiculosPage() {
   const [page, setPage] =
     useState(1);
 
+  const [deleteDialogOpen, setDeleteDialogOpen] =
+    useState(false);
+
+  const [vehiculoToDelete, setVehiculoToDelete] =
+    useState<{ id: number; placa: string } | null>(null);
+
   useEffect(() => {
     void getPaginated({
       search,
@@ -51,26 +59,35 @@ export default function VehiculosPage() {
     page,
   ]);
 
-  const handleDelete = async (
+  const handleDeleteClick = (
     id: number,
     placa: string,
-  ): Promise<void> => {
-    const confirmed = window.confirm(
-      `¿Está seguro de eliminar el vehículo ${placa}?`,
-    );
+  ): void => {
+    setVehiculoToDelete({ id, placa });
+    setDeleteDialogOpen(true);
+  };
 
-    if (!confirmed) {
+  const handleConfirmDelete = async (): Promise<void> => {
+    if (!vehiculoToDelete) {
       return;
     }
 
-    const success = await remove(id);
+    const success = await remove(vehiculoToDelete.id);
+
+    setDeleteDialogOpen(false);
+    setVehiculoToDelete(null);
 
     if (success) {
-      await getPaginated({
+      toast.success(`Vehículo ${vehiculoToDelete.placa} eliminado correctamente.`);
+      void getPaginated({
         search,
         ordering: "placa",
         page,
       });
+    } else {
+      toast.error(
+        "No se puede eliminar el vehículo porque tiene citas, órdenes o historial asociado.",
+      );
     }
   };
 
@@ -224,7 +241,7 @@ export default function VehiculosPage() {
                       {vehiculo.placa}
                     </td>
 
-                    <td className="px-5 py-4 text-sm text-slate-700">
+                    <td className="px-5 py-4 text-sm text-red-600 font-bold">
                       {vehiculo.cliente_nombre}
                     </td>
 
@@ -294,7 +311,7 @@ export default function VehiculosPage() {
                         <button
                           type="button"
                           onClick={() => {
-                            void handleDelete(
+                            handleDeleteClick(
                               vehiculo.id,
                               vehiculo.placa,
                             );
@@ -350,6 +367,24 @@ export default function VehiculosPage() {
           </div>
         </footer>
       </div>
+
+      <ConfirmDeleteDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Eliminar vehículo"
+        description={
+          vehiculoToDelete
+            ? `¿Estás seguro de que deseas eliminar el vehículo ${vehiculoToDelete.placa}? Esta acción no se puede deshacer.`
+            : ""
+        }
+        loading={loading}
+        onConfirm={() => {
+          void handleConfirmDelete();
+        }}
+        onCancel={() => {
+          setVehiculoToDelete(null);
+        }}
+      />
     </section>
   );
 }

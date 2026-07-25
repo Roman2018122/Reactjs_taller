@@ -2,9 +2,14 @@ import type {
   FormEvent,
 } from "react";
 
+import { Plus } from "lucide-react";
+
 import type {
   VehiculoEmpleadoFormData,
 } from "@/domain/entities/vehiculo.entity";
+
+import MarcaDialog from "@/presentation/components/common/dialogs/MarcaDialog";
+import ModeloDialog from "@/presentation/components/common/dialogs/ModeloDialog";
 
 export interface VehiculoSelectOption {
   value: number;
@@ -36,6 +41,16 @@ interface VehiculoFormProps {
     marcaId: number,
   ) => void;
 
+  onMarcaCreada: (
+    marcaId: number,
+  ) => void;
+
+  onModeloCreado: (
+    modeloId: number,
+  ) => void;
+
+  onCrearCliente: () => void;
+
   onSubmit: (
     event: FormEvent<HTMLFormElement>,
   ) => void;
@@ -56,6 +71,9 @@ export default function VehiculoForm({
   loadingOptions = false,
   onChange,
   onMarcaChange,
+  onMarcaCreada,
+  onModeloCreado,
+  onCrearCliente,
   onSubmit,
   onCancel,
 }: VehiculoFormProps) {
@@ -83,12 +101,23 @@ export default function VehiculoForm({
       >
         <div className="grid gap-5 md:grid-cols-2">
           <div className="md:col-span-2">
-            <label
-              htmlFor="cliente"
-              className="mb-2 block text-sm font-medium text-slate-700"
-            >
-              Cliente propietario
-            </label>
+            <div className="mb-2 flex items-center gap-2">
+              <label
+                htmlFor="cliente"
+                className="text-sm font-medium text-slate-700"
+              >
+                Cliente propietario
+              </label>
+
+              <button
+                type="button"
+                onClick={onCrearCliente}
+                className="inline-flex items-center gap-1 rounded-md border border-slate-300 bg-white px-2 py-0.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100 hover:text-blue-600"
+              >
+                <Plus className="h-3 w-3" />
+                Crear cliente
+              </button>
+            </div>
 
             <select
               id="cliente"
@@ -120,12 +149,20 @@ export default function VehiculoForm({
           </div>
 
           <div>
-            <label
-              htmlFor="marca"
-              className="mb-2 block text-sm font-medium text-slate-700"
-            >
-              Marca
-            </label>
+            <div className="mb-2 flex items-center gap-2">
+              <label
+                htmlFor="marca"
+                className="text-sm font-medium text-slate-700"
+              >
+                Marca
+              </label>
+
+              <MarcaDialog
+                onMarcaCreada={
+                  onMarcaCreada
+                }
+              />
+            </div>
 
             <select
               id="marca"
@@ -156,12 +193,21 @@ export default function VehiculoForm({
           </div>
 
           <div>
-            <label
-              htmlFor="modelo_vehiculo"
-              className="mb-2 block text-sm font-medium text-slate-700"
-            >
-              Modelo
-            </label>
+            <div className="mb-2 flex items-center gap-2">
+              <label
+                htmlFor="modelo_vehiculo"
+                className="text-sm font-medium text-slate-700"
+              >
+                Modelo
+              </label>
+
+              <ModeloDialog
+                marcaId={marcaSeleccionada}
+                onModeloCreado={
+                  onModeloCreado
+                }
+              />
+            </div>
 
             <select
               id="modelo_vehiculo"

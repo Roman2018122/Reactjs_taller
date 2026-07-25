@@ -8,6 +8,7 @@ import {
 import {
   ClipboardList,
   Eye,
+  Plus,
   Search,
 } from "lucide-react";
 
@@ -37,6 +38,13 @@ import {
 
 import { Input } from "@/presentation/components/ui/input";
 import { Label } from "@/presentation/components/ui/label";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import {
   Select,
@@ -242,21 +250,60 @@ export default function OrdenTrabajoEmpleadoListPage() {
   return (
     <main className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
       <header className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
-            <ClipboardList className="h-6 w-6" />
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
+              <ClipboardList className="h-6 w-6" />
+            </div>
+
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                Órdenes de trabajo
+              </h1>
+
+              <p className="mt-1 text-sm leading-6 text-slate-600">
+                Consulta las órdenes registradas en el
+                taller.
+              </p>
+            </div>
           </div>
 
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-              Órdenes de trabajo
-            </h1>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                className="bg-blue-600 font-semibold text-white shadow-sm hover:bg-blue-700"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Nueva orden
+              </Button>
+            </DropdownMenuTrigger>
 
-            <p className="mt-1 text-sm leading-6 text-slate-600">
-              Consulta las órdenes registradas en el
-              taller.
-            </p>
-          </div>
+            <DropdownMenuContent
+              align="end"
+              className="w-56"
+            >
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => {
+                  navigate("/empleado/citas");
+                }}
+              >
+                Desde una cita
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => {
+                  navigate(
+                    "/empleado/ordenes/nueva",
+                  );
+                }}
+              >
+                Sin cita
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 

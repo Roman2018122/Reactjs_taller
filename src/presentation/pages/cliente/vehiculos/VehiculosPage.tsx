@@ -10,6 +10,8 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import { useVehiculoStore } from "@/presentation/store/vehiculo.store";
+import { toast } from "@/presentation/store/toast.store";
+import ConfirmDeleteDialog from "@/presentation/components/common/ConfirmDeleteDialog";
 
 export default function VehiculosPage() {
   const navigate = useNavigate();
@@ -40,6 +42,12 @@ export default function VehiculosPage() {
 
   const [busqueda, setBusqueda] =
     useState("");
+
+  const [deleteDialogOpen, setDeleteDialogOpen] =
+    useState(false);
+
+  const [vehiculoToDelete, setVehiculoToDelete] =
+    useState<{ id: number; placa: string } | null>(null);
 
   useEffect(() => {
     void getAll();
@@ -88,22 +96,31 @@ export default function VehiculosPage() {
     navigate(`/cliente/vehiculos/${id}`);
   };
 
-  const handleEliminar = async (
+  const handleEliminarClick = (
     id: number,
     placa: string,
   ) => {
-    const confirmado = window.confirm(
-      `¿Seguro que deseas eliminar el vehículo con placa ${placa}?`,
-    );
+    setVehiculoToDelete({ id, placa });
+    setDeleteDialogOpen(true);
+  };
 
-    if (!confirmado) {
+  const handleConfirmDelete = async () => {
+    if (!vehiculoToDelete) {
       return;
     }
 
-    const eliminado = await remove(id);
+    const eliminado = await remove(vehiculoToDelete.id);
 
-    if (!eliminado) {
-      return;
+    setDeleteDialogOpen(false);
+
+    if (eliminado) {
+      toast.success(`Vehículo ${vehiculoToDelete.placa} eliminado correctamente.`);
+      setVehiculoToDelete(null);
+    } else {
+      toast.error(
+        "No se puede eliminar el vehículo porque tiene citas, órdenes o historial asociado.",
+      );
+      setVehiculoToDelete(null);
     }
   };
 
@@ -313,7 +330,7 @@ export default function VehiculosPage() {
                               type="button"
                               disabled={loading}
                               onClick={() => {
-                                void handleEliminar(
+                                handleEliminarClick(
                                   vehiculo.id,
                                   vehiculo.placa,
                                 );
@@ -332,6 +349,23 @@ export default function VehiculosPage() {
             </div>
           </section>
         )}
+      <ConfirmDeleteDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Eliminar vehículo"
+        description={
+          vehiculoToDelete
+            ? `¿Estás seguro de que deseas eliminar el vehículo ${vehiculoToDelete.placa}? Esta acción no se puede deshacer.`
+            : ""
+        }
+        loading={loading}
+        onConfirm={() => {
+          void handleConfirmDelete();
+        }}
+        onCancel={() => {
+          setVehiculoToDelete(null);
+        }}
+      />
     </main>
   );
 }

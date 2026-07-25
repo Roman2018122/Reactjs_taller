@@ -75,6 +75,7 @@ export default function LoginPage() {
     login,
     isLoading,
     error,
+    fieldErrors,
     clearError,
     user,
   } = useAuthStore();
@@ -88,6 +89,7 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -121,6 +123,29 @@ export default function LoginPage() {
     navigate,
   ]);
 
+  /*
+   * Sincronizar errores por campo del API con react-hook-form.
+   */
+  useEffect(() => {
+    if (!fieldErrors) {
+      return;
+    }
+
+    for (const [field, messages] of Object.entries(
+      fieldErrors,
+    )) {
+      if (
+        field === "username" ||
+        field === "password"
+      ) {
+        setError(field, {
+          type: "server",
+          message: messages[0],
+        });
+      }
+    }
+  }, [fieldErrors, setError]);
+
   async function onSubmit(
     data: LoginFormData,
   ): Promise<void> {
@@ -131,20 +156,12 @@ export default function LoginPage() {
         username: data.username,
         password: data.password,
       });
-
-      /*
-       * No navegamos aquí.
-       * El store actualiza user y el useEffect
-       * ejecuta la redirección.
-       */
     } catch {
       /*
-       * El store guarda el error.
+       * El store guarda el error y los fieldErrors.
        */
     }
   }
-
-  // Aquí continúa el return actual de tu página.
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-100 px-4 py-8 sm:px-6">

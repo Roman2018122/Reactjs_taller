@@ -29,6 +29,7 @@ import { Label } from "@/components/ui/label";
 import { useCitaStore } from "@/presentation/store/cita.store";
 import { useServicioStore } from "@/presentation/store/servicio.store";
 import { useVehiculoStore } from "@/presentation/store/vehiculo.store";
+import { toast } from "@/presentation/store/toast.store";
 
 const initialFormData: CitaFormData = {
   vehiculo: 0,
@@ -268,7 +269,7 @@ export default function CitaFormPage() {
     const validationError = validateForm();
 
     if (validationError !== null) {
-      window.alert(validationError);
+      toast.error(validationError);
       return;
     }
 

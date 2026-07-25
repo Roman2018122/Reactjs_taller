@@ -14,6 +14,10 @@ import {
   UpdateOrdenTrabajoEstadoUseCase,
 } from "@/application/use-cases/ordenes/update-orden-trabajo-estado.use-case";
 
+import {
+  CrearOrdenSinCitaUseCase,
+} from "@/application/use-cases/ordenes/crear-orden-sin-cita.use-case";
+
 const ordenTrabajoRepository =
   new AxiosOrdenTrabajoRepository();
 
@@ -29,5 +33,10 @@ export const getOrdenTrabajoByIdUseCase =
 
 export const updateOrdenTrabajoEstadoUseCase =
   new UpdateOrdenTrabajoEstadoUseCase(
+    ordenTrabajoRepository,
+  );
+
+export const crearOrdenSinCitaUseCase =
+  new CrearOrdenSinCitaUseCase(
     ordenTrabajoRepository,
   );

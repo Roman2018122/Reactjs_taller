@@ -99,6 +99,20 @@ const registerSchema = z
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
+// ─── Mapeo de campos del API a campos del formulario ───────────────────────────
+
+const API_FIELD_MAP: Record<string, keyof RegisterFormData> = {
+  username: "username",
+  email: "email",
+  first_name: "first_name",
+  last_name: "last_name",
+  identificacion: "identificacion",
+  telefono: "telefono",
+  direccion: "direccion",
+  password: "password",
+  password_confirmacion: "password_confirmacion",
+};
+
 // ─── Componente ───────────────────────────────────────────────────────────────
 
 export default function RegisterPage() {
@@ -108,15 +122,11 @@ export default function RegisterPage() {
     register: registerUser,
     isLoading,
     error,
+    fieldErrors,
     clearError,
     user,
   } = useAuthStore();
 
-  /*
-   * El endpoint de registro crea únicamente usuarios CLIENTE.
-   * Como el adapter inicia sesión automáticamente después del registro,
-   * el usuario será enviado al panel de cliente.
-   */
   useEffect(() => {
     if (user) {
       navigate("/cliente", {
@@ -128,6 +138,7 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -143,6 +154,25 @@ export default function RegisterPage() {
       password_confirmacion: "",
     },
   });
+
+  useEffect(() => {
+    if (!fieldErrors) {
+      return;
+    }
+
+    for (const [apiField, messages] of Object.entries(
+      fieldErrors,
+    )) {
+      const formField = API_FIELD_MAP[apiField];
+
+      if (formField) {
+        setError(formField, {
+          type: "server",
+          message: messages[0],
+        });
+      }
+    }
+  }, [fieldErrors, setError]);
 
   async function onSubmit(
     data: RegisterFormData,
@@ -162,15 +192,8 @@ export default function RegisterPage() {
         password_confirmacion:
           data.password_confirmacion,
       });
-
-      /*
-       * No navegamos aquí.
-       * Cuando el store actualiza user, el useEffect redirige.
-       */
     } catch {
-      /*
-       * El store ya guarda el mensaje de error.
-       */
+      // El store guarda el error y los fieldErrors.
     }
   }
 
@@ -191,7 +214,7 @@ export default function RegisterPage() {
           </div>
 
           <CardTitle className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-            Registrate con nosotros 
+            Registrate con nosotros
           </CardTitle>
 
           <CardDescription className="mt-2 text-sm leading-6 text-slate-600">
@@ -524,4 +547,3 @@ export default function RegisterPage() {
     </main>
   );
 }
-

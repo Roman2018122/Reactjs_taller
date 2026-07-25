@@ -13,10 +13,10 @@ import RegisterPage from "@/presentation/pages/auth/RegisterPage";
 import ClienteDashboard from "@/presentation/pages/cliente/ClienteDashboard";
 import EmpleadoDashboard from "@/presentation/pages/empleado/EmpleadoDashboard";
 
-import VehiculosPage from "@/presentation/pages/vehiculos/VehiculosPage";
-import VehiculoFormPage from "@/presentation/pages/vehiculos/VehiculoFormPage";
-import VehiculoDetallePage from "@/presentation/pages/vehiculos/VehiculoDetallePage";
-import VehiculoEditarPage from "@/presentation/pages/vehiculos/VehiculoEditarPage";
+import ClienteVehiculosPage from "@/presentation/pages/cliente/vehiculos/VehiculosPage";
+import ClienteVehiculoFormPage from "@/presentation/pages/cliente/vehiculos/VehiculoFormPage";
+import ClienteVehiculoDetallePage from "@/presentation/pages/cliente/vehiculos/VehiculoDetallePage";
+import ClienteVehiculoEditarPage from "@/presentation/pages/cliente/vehiculos/VehiculoEditarPage";
 
 import CitasPage from "@/presentation/pages/cliente/citas/CitasPage";
 import CitaFormPage from "@/presentation/pages/cliente/citas/CitaFormPage";
@@ -28,6 +28,7 @@ import CitaEmpleadoDetallePage from "@/presentation/pages/empleado/citas/CitaEmp
 
 import OrdenTrabajoEmpleadoListPage from "@/presentation/pages/empleado/ordenes/OrdenTrabajoEmpleadoListPage";
 import OrdenTrabajoEmpleadoDetallePage from "@/presentation/pages/empleado/ordenes/OrdenTrabajoEmpleadoDetallePage";
+import CrearOrdenSinCitaPage from "@/presentation/pages/empleado/ordenes/CrearOrdenSinCitaPage";
 
 import OrdenTrabajoClienteListPage from "@/presentation/pages/cliente/ordenes/OrdenTrabajoClienteListPage";
 import OrdenTrabajoClienteDetallePage from "@/presentation/pages/cliente/ordenes/OrdenTrabajoClienteDetallePage";
@@ -43,11 +44,12 @@ import AppShell from "@/presentation/components/AppShell";
 import PublicLayout from "@/presentation/components/layout/PublicLayout";
 
 //Empleado
-import VehiculosPagee from "@/presentation/pages/empleado/vehiculos/VehiculosPagee";
-import ClientesPage from "@/presentation/pages/cliente/empleado/clientes/ClientesPage";
-import ClienteFormPage from "@/presentation/pages/cliente/empleado/clientes/ClienteFormPage";
-import ClienteDetallePage from "@/presentation/pages/cliente/empleado/clientes/ClienteDetallePage";
-//import ClienteEditarPage from "@/presentation/pages/cliente/empleado/clientes/ClienteEditarPage";
+import EmpleadoVehiculosPage  from "@/presentation/pages/empleado/vehiculos/VehiculosPage";
+import EmpleadoVehiculoFormPage from "@/presentation/pages/empleado/vehiculos/VehiculoFormPage";
+import ClientesPage from "@/presentation/pages/empleado/clientes/ClientesPage";
+import ClienteFormPage from "@/presentation/pages/empleado/clientes/ClienteFormPage";
+import ClienteDetallePage from "@/presentation/pages/empleado/clientes/ClienteDetallePage";
+import ClienteEditarPage from "@/presentation/pages/empleado/clientes/ClienteEditarPage";
 
 
 export default function AppRouter() {
@@ -99,7 +101,7 @@ export default function AppRouter() {
               <ProtectedRoute
                 allowedRoles={["CLIENTE"]}
               >
-                <VehiculosPage />
+                <ClienteVehiculosPage />
               </ProtectedRoute>
             }
           />
@@ -111,7 +113,7 @@ export default function AppRouter() {
               <ProtectedRoute
                 allowedRoles={["CLIENTE"]}
               >
-                <VehiculoFormPage />
+                <ClienteVehiculoFormPage />
               </ProtectedRoute>
             }
           />
@@ -122,7 +124,7 @@ export default function AppRouter() {
               <ProtectedRoute
                 allowedRoles={["CLIENTE"]}
               >
-                <VehiculoDetallePage />
+                <ClienteVehiculoDetallePage />
               </ProtectedRoute>
             }
           />
@@ -133,7 +135,7 @@ export default function AppRouter() {
               <ProtectedRoute
                 allowedRoles={["CLIENTE"]}
               >
-                <VehiculoEditarPage />
+                <ClienteVehiculoEditarPage />
               </ProtectedRoute>
             }
           />
@@ -228,7 +230,7 @@ export default function AppRouter() {
                   "ADMIN",
                 ]}
               >
-                <VehiculosPagee />
+                <EmpleadoVehiculosPage />
               </ProtectedRoute>
             }
           />
@@ -242,7 +244,7 @@ export default function AppRouter() {
                   "ADMIN",
                 ]}
               >
-                <VehiculoFormPage />
+                <EmpleadoVehiculoFormPage />
               </ProtectedRoute>
             }
           />
@@ -256,7 +258,7 @@ export default function AppRouter() {
                   "ADMIN",
                 ]}
               >
-                <VehiculoDetallePage />
+                <ClienteVehiculoDetallePage />
               </ProtectedRoute>
             }
           />
@@ -270,7 +272,7 @@ export default function AppRouter() {
                   "ADMIN",
                 ]}
               >
-                <VehiculoEditarPage />
+                <ClienteVehiculoEditarPage />
               </ProtectedRoute>
             }
           />
@@ -330,6 +332,20 @@ export default function AppRouter() {
             }
           />
 
+          <Route
+            path="/empleado/clientes/:id/editar"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  "EMPLEADO",
+                  "ADMIN",
+                ]}
+              >
+                <ClienteEditarPage />
+              </ProtectedRoute>
+            }
+          />
+
           
 
           {/* Citas del empleado */}
@@ -362,6 +378,20 @@ export default function AppRouter() {
           />
 
           {/* Órdenes del empleado */}
+          <Route
+            path="/empleado/ordenes/nueva"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  "EMPLEADO",
+                  "ADMIN",
+                ]}
+              >
+                <CrearOrdenSinCitaPage />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/empleado/ordenes"
             element={

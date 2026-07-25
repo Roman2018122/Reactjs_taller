@@ -2,8 +2,24 @@
 
 import { create } from "zustand";
 
-import type { ModeloVehiculo } from "@/domain/entities/modelo-vehiculo.entity";
-import { modeloVehiculoUseCase } from "@/infrastructure/factories/modelo-vehiculo.factory";
+import type {
+  ModeloVehiculo,
+  ModeloVehiculoFormData,
+} from "@/domain/entities/modelo-vehiculo.entity";
+import {
+  getModelosVehiculoUseCase,
+  getModeloVehiculoByIdUseCase,
+  createModeloVehiculoUseCase,
+} from "@/infrastructure/factories/modelo-vehiculo.factory";
+
+function getErrorMessage(
+  error: unknown,
+  defaultMessage: string,
+): string {
+  return error instanceof Error
+    ? error.message
+    : defaultMessage;
+}
 
 export interface ModeloVehiculoState {
   modelos: ModeloVehiculo[];
@@ -14,7 +30,13 @@ export interface ModeloVehiculoState {
 
   getAll: () => Promise<void>;
   getById: (id: number) => Promise<void>;
-  
+  create: (
+    data: ModeloVehiculoFormData,
+  ) => Promise<boolean>;
+
+  setModeloSeleccionado: (
+    modelo: ModeloVehiculo | null,
+  ) => void;
   clearModeloSeleccionado: () => void;
   clearError: () => void;
 }
@@ -34,7 +56,7 @@ export const useModeloVehiculoStore =
 
       try {
         const modelos =
-          await modeloVehiculoUseCase.getAll();
+          await getModelosVehiculoUseCase.execute();
 
         set({
           modelos,
@@ -42,10 +64,10 @@ export const useModeloVehiculoStore =
         });
       } catch (error: unknown) {
         set({
-          error:
-            error instanceof Error
-              ? error.message
-              : "Error al obtener los modelos de vehículos.",
+          error: getErrorMessage(
+            error,
+            "Error al obtener los modelos de vehículos.",
+          ),
           isLoading: false,
         });
       }
@@ -61,7 +83,7 @@ export const useModeloVehiculoStore =
 
       try {
         const modelo =
-          await modeloVehiculoUseCase.getById(id);
+          await getModeloVehiculoByIdUseCase.execute(id);
 
         set({
           modeloSeleccionado: modelo,
@@ -69,13 +91,55 @@ export const useModeloVehiculoStore =
         });
       } catch (error: unknown) {
         set({
-          error:
-            error instanceof Error
-              ? error.message
-              : "Error al obtener el modelo de vehículo.",
+          error: getErrorMessage(
+            error,
+            "Error al obtener el modelo de vehículo.",
+          ),
           isLoading: false,
         });
       }
+    },
+
+    create: async (
+      data: ModeloVehiculoFormData,
+    ): Promise<boolean> => {
+      set({
+        isLoading: true,
+        error: null,
+      });
+
+      try {
+        const nuevoModelo =
+          await createModeloVehiculoUseCase.execute(data);
+
+        set((state) => ({
+          modelos: [
+            ...state.modelos,
+            nuevoModelo,
+          ],
+          isLoading: false,
+        }));
+
+        return true;
+      } catch (error: unknown) {
+        set({
+          error: getErrorMessage(
+            error,
+            "Error al crear el modelo de vehículo.",
+          ),
+          isLoading: false,
+        });
+
+        return false;
+      }
+    },
+
+    setModeloSeleccionado: (
+      modelo: ModeloVehiculo | null,
+    ): void => {
+      set({
+        modeloSeleccionado: modelo,
+      });
     },
 
     clearModeloSeleccionado: (): void => {

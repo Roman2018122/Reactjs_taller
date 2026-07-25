@@ -1,12 +1,14 @@
 import { create } from "zustand";
 
 import type {
+  CrearOrdenSinCitaData,
   EstadoOrdenTrabajo,
   OrdenTrabajo,
   OrdenTrabajoFilters,
 } from "@/domain/entities/orden-trabajo.entity";
 
 import {
+  crearOrdenSinCitaUseCase,
   getOrdenesTrabajoUseCase,
   getOrdenTrabajoByIdUseCase,
   updateOrdenTrabajoEstadoUseCase,
@@ -33,6 +35,10 @@ interface OrdenTrabajoState {
   ) => Promise<void>;
 
   getById: (id: number) => Promise<void>;
+
+  create: (
+    data: CrearOrdenSinCitaData,
+  ) => Promise<OrdenTrabajo>;
 
   setPage: (page: number) => void;
   setSearch: (search: string) => void;
@@ -147,6 +153,41 @@ export const useOrdenTrabajoStore =
         
       }
     },
+
+    create: async (
+      data: CrearOrdenSinCitaData,
+    ): Promise<OrdenTrabajo> => {
+      set({
+        loading: true,
+        error: null,
+      });
+
+      try {
+        const orden =
+          await crearOrdenSinCitaUseCase.execute(data);
+
+        set((state) => ({
+          ordenes: [orden, ...state.ordenes],
+          count: state.count + 1,
+          loading: false,
+        }));
+
+        return orden;
+      } catch (error: unknown) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "No se pudo crear la orden de trabajo.";
+
+        set({
+          loading: false,
+          error: message,
+        });
+
+        throw error;
+      }
+    },
+
     updateEstado: async (
       id: number,
       estado: EstadoOrdenTrabajo,

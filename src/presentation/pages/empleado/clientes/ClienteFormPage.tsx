@@ -8,7 +8,10 @@ import type {
   FormEvent,
 } from "react";
 
-import { useNavigate } from "react-router-dom";
+import {
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 
 import type {
   ClienteFormData,
@@ -16,6 +19,11 @@ import type {
 
 import ClienteForm from "./ClienteForm";
 import { useClienteStore } from "@/presentation/store/cliente.store";
+
+interface ClienteFormLocationState {
+  returnTo?: string;
+  fromVehicleForm?: boolean;
+}
 
 const initialValues: ClienteFormData = {
   nombres: "",
@@ -29,6 +37,19 @@ const initialValues: ClienteFormData = {
 
 export default function ClienteFormPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const navigationState =
+    location.state as
+      | ClienteFormLocationState
+      | null;
+
+  const fromVehicleForm =
+    navigationState?.fromVehicleForm ===
+    true;
+
+  const returnTo =
+    navigationState?.returnTo;
 
   const {
     createCliente,
@@ -94,10 +115,35 @@ export default function ClienteFormPage() {
       return;
     }
 
+    if (
+      fromVehicleForm &&
+      returnTo
+    ) {
+      navigate(returnTo, {
+        state: {
+          nuevoClienteId: cliente.id,
+        },
+        replace: true,
+      });
+
+      return;
+    }
+
     navigate("/empleado/clientes");
   };
 
   const handleCancel = (): void => {
+    if (
+      fromVehicleForm &&
+      returnTo
+    ) {
+      navigate(returnTo, {
+        replace: true,
+      });
+
+      return;
+    }
+
     navigate("/empleado/clientes");
   };
 

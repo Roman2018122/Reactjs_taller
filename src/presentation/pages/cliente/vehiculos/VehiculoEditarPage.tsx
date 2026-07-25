@@ -25,6 +25,7 @@ import { Label } from "@/components/ui/label";
 
 import { useModeloVehiculoStore } from "@/presentation/store/modelo-vehiculo.store";
 import { useVehiculoStore } from "@/presentation/store/vehiculo.store";
+import { toast } from "@/presentation/store/toast.store";
 
 const initialFormData: VehiculoFormData = {
   modelo_vehiculo: 0,
@@ -202,7 +203,7 @@ export default function VehiculoEditarPage() {
     const validationError = validateForm();
 
     if (validationError !== null) {
-      window.alert(validationError);
+      toast.error(validationError);
       return;
     }
 

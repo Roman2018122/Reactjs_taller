@@ -60,9 +60,15 @@ export default function ProtectedRoute({
     allowedRoles &&
     !allowedRoles.includes(user.rol)
   ) {
+    const fallback =
+      user.rol === "EMPLEADO" ||
+      user.rol === "ADMIN"
+        ? "/empleado"
+        : "/cliente";
+
     return (
       <Navigate
-        to="/"
+        to={fallback}
         replace
       />
     );

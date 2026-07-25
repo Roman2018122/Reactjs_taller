@@ -22,8 +22,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+import { useMarcaStore } from "@/presentation/store/marca.store";
 import { useModeloVehiculoStore } from "@/presentation/store/modelo-vehiculo.store";
 import { useVehiculoStore } from "@/presentation/store/vehiculo.store";
+import { toast } from "@/presentation/store/toast.store";
+
+import MarcaDialog from "@/presentation/components/common/dialogs/MarcaDialog";
+import ModeloDialog from "@/presentation/components/common/dialogs/ModeloDialog";
 
 const initialFormData: VehiculoFormData = {
   modelo_vehiculo: 0,
@@ -55,6 +60,21 @@ export default function VehiculoFormPage() {
 
   const [formData, setFormData] =
     useState<VehiculoFormData>(initialFormData);
+
+  const [marcaSeleccionada, setMarcaSeleccionada] =
+    useState(0);
+
+  const marcas = useMarcaStore(
+    (state) => state.marcas,
+  );
+
+  const isLoadingMarcas = useMarcaStore(
+    (state) => state.isLoading,
+  );
+
+  const getMarcas = useMarcaStore(
+    (state) => state.getAll,
+  );
 
   const modelos = useModeloVehiculoStore(
     (state) => state.modelos,
@@ -90,8 +110,16 @@ export default function VehiculoFormPage() {
 
   useEffect(() => {
     clearVehiculoError();
+    void getMarcas();
     void getModelos();
-  }, [getModelos, clearVehiculoError]);
+  }, [getMarcas, getModelos, clearVehiculoError]);
+
+  const modelosFiltrados = modelos.filter(
+    (modelo) =>
+      marcaSeleccionada === 0
+        ? true
+        : modelo.marca === marcaSeleccionada,
+  );
 
   const handleChange = (
     event: ChangeEvent<
@@ -116,6 +144,41 @@ export default function VehiculoFormPage() {
     setFormData((currentFormData) => ({
       ...currentFormData,
       [name]: value,
+    }));
+  };
+
+  const handleMarcaChange = (
+    marcaId: number,
+  ): void => {
+    setMarcaSeleccionada(marcaId);
+
+    setFormData((currentFormData) => ({
+      ...currentFormData,
+      modelo_vehiculo: 0,
+    }));
+  };
+
+  const handleMarcaCreada = (
+    marcaId: number,
+  ): void => {
+    void getMarcas();
+
+    setMarcaSeleccionada(marcaId);
+
+    setFormData((currentFormData) => ({
+      ...currentFormData,
+      modelo_vehiculo: 0,
+    }));
+  };
+
+  const handleModeloCreado = (
+    modeloId: number,
+  ): void => {
+    void getModelos();
+
+    setFormData((currentFormData) => ({
+      ...currentFormData,
+      modelo_vehiculo: modeloId,
     }));
   };
 
@@ -164,7 +227,7 @@ export default function VehiculoFormPage() {
     const validationError = validateForm();
 
     if (validationError !== null) {
-      window.alert(validationError);
+      toast.error(validationError);
       return;
     }
 
@@ -194,6 +257,9 @@ export default function VehiculoFormPage() {
     });
   };
 
+  const isLoadingOptions =
+    isLoadingMarcas || isLoadingModelos;
+
   return (
     <main className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
       <header className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -220,23 +286,12 @@ export default function VehiculoFormPage() {
         </CardHeader>
 
         <CardContent className="p-5 sm:p-6">
-          {modelosError && (
+          {(modelosError || vehiculoError) && (
             <p
               role="alert"
               className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-700"
             >
-              No se pudieron cargar los modelos:{" "}
-              {modelosError}
-            </p>
-          )}
-
-          {vehiculoError && (
-            <p
-              role="alert"
-              className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-700"
-            >
-              No se pudo registrar el vehículo:{" "}
-              {vehiculoError}
+              {modelosError || vehiculoError}
             </p>
           )}
 
@@ -245,12 +300,73 @@ export default function VehiculoFormPage() {
             className="space-y-5"
           >
             <div className="space-y-2">
-              <Label
-                htmlFor="modelo_vehiculo"
-                className="text-sm font-medium text-slate-700"
+              <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="marca"
+                  className="text-sm font-medium text-slate-700"
+                >
+                  Marca del vehículo
+                </Label>
+
+                <MarcaDialog
+                  onMarcaCreada={
+                    handleMarcaCreada
+                  }
+                />
+              </div>
+
+              <select
+                id="marca"
+                value={marcaSeleccionada}
+                onChange={(event) => {
+                  handleMarcaChange(
+                    Number(event.target.value),
+                  );
+                }}
+                disabled={
+                  isLoadingOptions ||
+                  isLoadingVehiculo
+                }
+                className="flex h-10 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500"
+                required
               >
-                Modelo del vehículo
-              </Label>
+                <option value={0}>
+                  {isLoadingOptions
+                    ? "Cargando marcas..."
+                    : "Seleccione una marca"}
+                </option>
+
+                {marcas
+                  .filter(
+                    (marca) => marca.activa,
+                  )
+                  .map((marca) => (
+                    <option
+                      key={marca.id}
+                      value={marca.id}
+                    >
+                      {marca.nombre}
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="modelo_vehiculo"
+                  className="text-sm font-medium text-slate-700"
+                >
+                  Modelo del vehículo
+                </Label>
+
+                <ModeloDialog
+                  marcaId={marcaSeleccionada}
+                  onModeloCreado={
+                    handleModeloCreado
+                  }
+                />
+              </div>
 
               <select
                 id="modelo_vehiculo"
@@ -258,19 +374,22 @@ export default function VehiculoFormPage() {
                 value={formData.modelo_vehiculo}
                 onChange={handleChange}
                 disabled={
-                  isLoadingModelos ||
-                  isLoadingVehiculo
+                  isLoadingOptions ||
+                  isLoadingVehiculo ||
+                  marcaSeleccionada === 0
                 }
                 className="flex h-10 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500"
                 required
               >
                 <option value={0}>
-                  {isLoadingModelos
-                    ? "Cargando modelos..."
-                    : "Seleccione un modelo"}
+                  {marcaSeleccionada === 0
+                    ? "Primero seleccione una marca"
+                    : isLoadingModelos
+                      ? "Cargando modelos..."
+                      : "Seleccione un modelo"}
                 </option>
 
-                {modelos
+                {modelosFiltrados
                   .filter(
                     (modelo) => modelo.activo,
                   )
@@ -279,7 +398,7 @@ export default function VehiculoFormPage() {
                       key={modelo.id}
                       value={modelo.id}
                     >
-                      {modelo.nombre_completo}
+                      {modelo.nombre}
                     </option>
                   ))}
               </select>
@@ -407,8 +526,7 @@ export default function VehiculoFormPage() {
                 type="submit"
                 disabled={
                   isLoadingVehiculo ||
-                  isLoadingModelos ||
-                  modelos.length === 0
+                  isLoadingOptions
                 }
                 className="bg-blue-600 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
               >

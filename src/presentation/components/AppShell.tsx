@@ -17,8 +17,6 @@ import {
   Car,
   ClipboardList,
   LogOut,
-  ShieldCheck,
-  Stethoscope,
   User,
   Users,
   Wrench,
@@ -138,13 +136,6 @@ export default function AppShell() {
         <Wrench className="h-4 w-4" />
       ),
     },
-    {
-      label: "Recomendaciones",
-      path: "/cliente/recomendaciones",
-      icon: (
-        <ShieldCheck className="h-4 w-4" />
-      ),
-    },
   ];
 
   const empleadoNavigation: NavigationItem[] = [
@@ -180,37 +171,9 @@ export default function AppShell() {
         <ClipboardList className="h-4 w-4" />
       ),
     },
-    {
-      label: "Diagnósticos",
-      path: "/empleado/diagnosticos",
-      icon: (
-        <Stethoscope className="h-4 w-4" />
-      ),
-    },
-    {
-      label: "Servicios de la orden",
-      path: "/empleado/servicios",
-      icon: (
-        <Wrench className="h-4 w-4" />
-      ),
-    },
-    {
-      label: "Recomendaciones",
-      path: "/empleado/recomendaciones",
-      icon: (
-        <ShieldCheck className="h-4 w-4" />
-      ),
-    },
   ];
 
-  /*
-   * Por ahora se conserva la misma navegación
-   * del empleado para el administrador porque
-   * así funcionaba en tu componente original.
-   *
-   * Cuando tengas las rutas definitivas del
-   * administrador, crea adminNavigation.
-   */
+ 
   let privateNavigation: NavigationItem[] = [];
 
   if (user?.rol === "CLIENTE") {

@@ -123,21 +123,6 @@ export default function ClienteDashboard() {
             to="/cliente/ordenes"
             icon={<ClipboardList className="h-6 w-6" />}
           />
-
-
-          <DashboardCard
-            title="Servicios Realizados"
-            description="Consulta los servicios efectuados en tus vehículos."
-            to="/cliente/servicios"
-            icon={<Wrench className="h-6 w-6" />}
-          />
-
-          <DashboardCard
-            title="Recomendaciones"
-            description="Revisa los mantenimientos recomendados."
-            to="/cliente/recomendaciones"
-            icon={<ShieldCheck className="h-6 w-6" />}
-          />
         </div>
       </section>
     </main>

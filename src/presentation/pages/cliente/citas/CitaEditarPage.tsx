@@ -28,6 +28,7 @@ import { Label } from "@/components/ui/label";
 import { useCitaStore } from "@/presentation/store/cita.store";
 import { useServicioStore } from "@/presentation/store/servicio.store";
 import { useVehiculoStore } from "@/presentation/store/vehiculo.store";
+import { toast } from "@/presentation/store/toast.store";
 
 const initialFormData: CitaFormData = {
   vehiculo: 0,
@@ -248,7 +249,7 @@ export default function CitaEditarPage() {
       !Number.isInteger(citaId) ||
       citaId <= 0
     ) {
-      window.alert(
+      toast.error(
         "El identificador de la cita no es válido.",
       );
       return;
@@ -257,7 +258,7 @@ export default function CitaEditarPage() {
     const validationError = validateForm();
 
     if (validationError !== null) {
-      window.alert(validationError);
+      toast.error(validationError);
       return;
     }
 

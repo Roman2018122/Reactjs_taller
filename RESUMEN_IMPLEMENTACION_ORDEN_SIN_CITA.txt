@@ -1,0 +1,148 @@
+=========================================================
+RESUMEN DE IMPLEMENTACIÓN — Flujo "Orden sin cita"
+AutoCenter - Sistema de Gestión para Taller Mecánico
+Fecha: 24 de julio de 2026
+=========================================================
+
+OBJETIVO
+--------
+Implementar un segundo flujo para crear Órdenes de Trabajo
+sin necesidad de una cita previa, sin romper el flujo
+existente con cita.
+
+=========================================================
+ARCHIVOS MODIFICADOS (8)
+=========================================================
+
+1. src/domain/entities/orden-trabajo.entity.ts
+   - Se agregó la interfaz CrearOrdenSinCitaData con campos:
+     vehiculo, cliente, motivo_ingreso, observaciones_recepcion,
+     kilometraje_ingreso, fecha_estimada_entrega,
+     empleado_responsable y cita: null
+
+2. src/domain/entities/vehiculo.entity.ts
+   - Se agregó el campo "cliente?: number" a la interfaz
+     VehiculoFilters para permitir filtrar vehículos por cliente
+
+3. src/domain/ports/orden-trabajo.repository.ts
+   - Se agregó el método create(data: CrearOrdenSinCitaData):
+     Promise<OrdenTrabajo> a la interfaz OrdenTrabajoRepository
+
+4. src/infrastructure/adapters/axios-orden-trabajo.repository.ts
+   - Se implementó el método create() que realiza un
+     POST a /ordenes-trabajo/ con los datos de la orden
+
+5. src/infrastructure/factories/orden-trabajo.factory.ts
+   - Se importó y creó la instancia de CrearOrdenSinCitaUseCase
+   - Se exportó como "crearOrdenSinCitaUseCase"
+
+6. src/presentation/store/orden-trabajo.store.ts
+   - Se agregó la acción "create" al store de Zustand
+   - Llama a crearOrdenSinCitaUseCase.execute(data)
+   - Agrega la nueva orden al inicio del array ordenes
+   - Retorna la orden creada
+
+7. src/presentation/pages/empleado/ordenes/OrdenTrabajoEmpleadoListPage.tsx
+   - Se agregó botón "Nueva orden" con DropdownMenu
+   - Opción "Desde una cita" → navega a /empleado/citas
+   - Opción "Sin cita" → navega a /empleado/ordenes/nueva
+
+8. src/presentation/router/AppRouter.tsx
+   - Se importó CrearOrdenSinCitaPage
+   - Se agregó ruta /empleado/ordenes/nueva (EMPLEADO | ADMIN)
+   - La ruta se colocó ANTES de /empleado/ordenes/:id
+
+=========================================================
+ARCHIVO CREADO (1)
+=========================================================
+
+9. src/presentation/pages/empleado/ordenes/CrearOrdenSinCitaPage.tsx
+   Página completa con:
+   - Selector de cliente (carga todos los clientes)
+   - Selector de vehículo (filtra por cliente seleccionado)
+   - Campos de recepción:
+     * Motivo de ingreso (obligatorio)
+     * Observaciones de recepción
+     * Kilometraje de ingreso
+     * Fecha estimada de entrega
+   - Validaciones en frontend:
+     * cliente y vehículo obligatorios
+     * motivo obligatorio
+     * kilometraje debe ser entero >= 0
+     * fecha estimada no puede ser anterior a hoy
+   - Al crear, navega al detalle de la orden creada
+   - Envía cita: null al backend
+
+=========================================================
+LO QUE NO SE MODIFICÓ
+=========================================================
+
+- CrearOrdenTrabajoDialog.tsx (flujo con cita intacto)
+- Páginas de detalle de órdenes (ya manejaban cita=null)
+- Módulo de Citas
+- Módulo de Vehículos
+- Módulo de Clientes
+- Diagnósticos
+- Detalle de servicios
+- Recomendaciones
+- Lógica de estados
+- Historial de estados
+- Cambios de estado
+- Nada del rol CLIENTE
+
+=========================================================
+FLUJO EXISTENTE (CON CITA) — SIN CAMBIOS
+=========================================================
+
+Cliente agenda cita
+  → Empleado abre la cita
+    → Click "Crear Orden de Trabajo"
+      → Dialog con motivo, observaciones, kilometraje, fecha
+        → POST /citas/{id}/crear-orden/
+          → Orden creada con cita = {id}
+
+=========================================================
+NUEVO FLUJO (SIN CITA)
+=========================================================
+
+Empleado en /empleado/ordenes
+  → Click "Nueva orden" → "Sin cita"
+    → /empleado/ordenes/nueva
+      → Selecciona cliente
+        → Selecciona vehículo (filtrado por cliente)
+          → Completa motivo, observaciones, km, fecha
+            → POST /ordenes-trabajo/ (cita: null)
+              → Orden creada, redirige al detalle
+
+=========================================================
+VERIFICACIÓN
+=========================================================
+
+- TypeScript: PASA (nuevos errores introducidos: 0)
+- Lint (oxlint): PASA (solo warnings pre-existentes)
+- Build: PASA
+- Páginas de detalle: Ya manejaban cita=null correctamente
+  * Empleado: "Orden creada sin cita asociada"
+  * Cliente: "No existe una cita asociada"
+
+=========================================================
+NOTAS PARA EL BACKEND
+=========================================================
+
+Se asume que el backend ya soporta:
+1. POST /ordenes-trabajo/ con cuerpo:
+   {
+     vehiculo: number,
+     cliente: number,
+     motivo_ingreso: string,
+     observaciones_recepcion?: string,
+     kilometraje_ingreso?: number | null,
+     fecha_estimada_entrega?: string | null,
+     empleado_responsable?: number | null,
+     cita: null
+   }
+2. GET /vehiculos/?cliente=X para filtrar por cliente
+
+=========================================================
+ESTADO: COMPLETADO
+=========================================================

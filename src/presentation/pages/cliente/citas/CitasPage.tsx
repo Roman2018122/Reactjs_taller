@@ -14,6 +14,8 @@ import type {
 } from "@/domain/entities/cita.entity";
 
 import { useCitaStore } from "@/presentation/store/cita.store";
+import { toast } from "@/presentation/store/toast.store";
+import ConfirmDeleteDialog from "@/presentation/components/common/ConfirmDeleteDialog";
 
 function formatearFecha(fecha: string): string {
   const fechaConvertida = new Date(fecha);
@@ -86,6 +88,12 @@ export default function CitasPage() {
   const [busqueda, setBusqueda] =
     useState("");
 
+  const [deleteDialogOpen, setDeleteDialogOpen] =
+    useState(false);
+
+  const [citaToDelete, setCitaToDelete] =
+    useState<Cita | null>(null);
+
   useEffect(() => {
     void getAll();
   }, [getAll]);
@@ -135,21 +143,28 @@ export default function CitasPage() {
     );
   };
 
-  const handleEliminar = async (
+  const handleEliminarClick = (
     cita: Cita,
-  ): Promise<void> => {
-    const confirmado = window.confirm(
-      `¿Seguro que deseas eliminar la cita del vehículo ${cita.vehiculo_placa}?`,
-    );
+  ): void => {
+    setCitaToDelete(cita);
+    setDeleteDialogOpen(true);
+  };
 
-    if (!confirmado) {
+  const handleConfirmDelete = async (): Promise<void> => {
+    if (!citaToDelete) {
       return;
     }
 
     try {
-      await remove(cita.id);
+      await remove(citaToDelete.id);
+      toast.success("Cita eliminada correctamente.");
     } catch {
-      // El error ya se guarda en cita.store.ts.
+      toast.error(
+        "No se pudo eliminar la cita. Intenta de nuevo.",
+      );
+    } finally {
+      setDeleteDialogOpen(false);
+      setCitaToDelete(null);
     }
   };
 
@@ -339,7 +354,7 @@ export default function CitasPage() {
                                 type="button"
                                 disabled={loading}
                                 onClick={() => {
-                                  void handleEliminar(
+                                  handleEliminarClick(
                                     cita,
                                   );
                                 }}
@@ -358,6 +373,23 @@ export default function CitasPage() {
             </div>
           </section>
         )}
+      <ConfirmDeleteDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Eliminar cita"
+        description={
+          citaToDelete
+            ? `¿Estás seguro de que deseas eliminar la cita del vehículo ${citaToDelete.vehiculo_placa}? Esta acción no se puede deshacer.`
+            : ""
+        }
+        loading={loading}
+        onConfirm={() => {
+          void handleConfirmDelete();
+        }}
+        onCancel={() => {
+          setCitaToDelete(null);
+        }}
+      />
     </main>
   );
 }

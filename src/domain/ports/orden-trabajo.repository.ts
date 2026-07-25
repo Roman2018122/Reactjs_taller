@@ -1,4 +1,5 @@
 import type {
+  CrearOrdenSinCitaData,
   OrdenTrabajo,
   OrdenTrabajoFilters,
   OrdenTrabajoPaginatedResponse,
@@ -12,6 +13,10 @@ export interface OrdenTrabajoRepository {
   ): Promise<OrdenTrabajoPaginatedResponse>;
 
   getById(id: number): Promise<OrdenTrabajo>;
+
+  create(
+    data: CrearOrdenSinCitaData,
+  ): Promise<OrdenTrabajo>;
 
   updateEstado(
   id: number,

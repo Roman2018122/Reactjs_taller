@@ -46,6 +46,7 @@ export interface VehiculoFilters {
   search?: string;
   ordering?: string;
   page?: number;
+  cliente?: number;
 }
 
 export interface VehiculosPaginatedResponse {

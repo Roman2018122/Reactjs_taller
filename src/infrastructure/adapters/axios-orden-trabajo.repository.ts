@@ -1,4 +1,5 @@
 import type {
+  CrearOrdenSinCitaData,
   OrdenTrabajo,
   OrdenTrabajoFilters,
   OrdenTrabajoPaginatedResponse,
@@ -49,6 +50,23 @@ export class AxiosOrdenTrabajoRepository
       throw parseApiError(error);
     }
   }
+
+  async create(
+    data: CrearOrdenSinCitaData,
+  ): Promise<OrdenTrabajo> {
+    try {
+      const response =
+        await apiClient.post<OrdenTrabajo>(
+          "/ordenes-trabajo/",
+          data,
+        );
+
+      return response.data;
+    } catch (error: unknown) {
+      throw parseApiError(error);
+    }
+  }
+
   async updateEstado(
     id: number,
     data: UpdateOrdenTrabajoEstadoData,

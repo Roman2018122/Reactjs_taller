@@ -4,6 +4,7 @@ import { create } from "zustand";
 
 import { authUseCase } from "@/infrastructure/factories/auth.factory";
 import { AUTH_EXPIRED_EVENT } from "@/infrastructure/http/axios-client";
+import { ApiException } from "@/domain/exceptions/api.exception";
 
 import type { LoginDto } from "@/application/dtos/login.dto";
 import type { RegisterDto } from "@/application/dtos/register.dto";
@@ -13,64 +14,21 @@ import type { AuthTokens } from "@/domain/entities/auth-tokens.entity";
 // ─── Tipos del store ──────────────────────────────────────────────────────────
 
 interface AuthState {
-  /**
-   * Usuario autenticado.
-   */
   user: LoggedUser | null;
-
-  /**
-   * Tokens JWT actuales.
-   */
   tokens: AuthTokens | null;
-
-  /**
-   * Indica si hay una operación de autenticación en curso.
-   */
   isLoading: boolean;
-
-  /**
-   * Indica si ya terminó la restauración inicial de la sesión.
-   */
   isInitialized: boolean;
-
-  /**
-   * Mensaje del último error de autenticación.
-   */
   error: string | null;
+  fieldErrors: Record<string, string[]> | null;
 }
 
 interface AuthActions {
-  /**
-   * Inicia sesión.
-   */
   login(dto: LoginDto): Promise<void>;
-
-  /**
-   * Registra un cliente y luego inicia sesión automáticamente.
-   */
   register(dto: RegisterDto): Promise<void>;
-
-  /**
-   * Cierra la sesión y elimina los tokens locales.
-   */
   logout(): Promise<void>;
-
-  /**
-   * Intenta restaurar una sesión previamente almacenada.
-   */
   loadSession(): Promise<void>;
-
-  /**
-   * Limpia el mensaje de error.
-   */
   clearError(): void;
-
-  /**
-   * Limpia la sesión sin ejecutar el flujo normal de logout.
-   *
-   * Se usa cuando Axios detecta que el refresh token expiró
-   * o ya no es válido.
-   */
+  clearFieldErrors(): void;
   clearSession(): void;
 }
 
@@ -78,10 +36,17 @@ export type AuthStore = AuthState & AuthActions;
 
 // ─── Utilidades ───────────────────────────────────────────────────────────────
 
-function getErrorMessage(
-  error: unknown,
-  fallback: string,
-): string {
+function extractErrorInfo(error: unknown): {
+  message: string;
+  fieldErrors: Record<string, string[]> | null;
+} {
+  if (error instanceof ApiException) {
+    return {
+      message: error.detail,
+      fieldErrors: error.fieldErrors ?? null,
+    };
+  }
+
   if (
     typeof error === "object" &&
     error !== null
@@ -92,15 +57,15 @@ function getErrorMessage(
     };
 
     if (typeof possibleError.detail === "string") {
-      return possibleError.detail;
+      return { message: possibleError.detail, fieldErrors: null };
     }
 
     if (typeof possibleError.message === "string") {
-      return possibleError.message;
+      return { message: possibleError.message, fieldErrors: null };
     }
   }
 
-  return fallback;
+  return { message: "Ocurrió un error inesperado.", fieldErrors: null };
 }
 
 // ─── Store ────────────────────────────────────────────────────────────────────
@@ -111,12 +76,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
   isLoading: false,
   isInitialized: false,
   error: null,
+  fieldErrors: null,
 
   async login(dto) {
-    set({
-      isLoading: true,
-      error: null,
-    });
+    set({ isLoading: true, error: null, fieldErrors: null });
 
     try {
       const session = await authUseCase.login(dto);
@@ -127,60 +90,56 @@ export const useAuthStore = create<AuthStore>((set) => ({
         isLoading: false,
         isInitialized: true,
         error: null,
+        fieldErrors: null,
       });
     } catch (error: unknown) {
+      const info = extractErrorInfo(error);
+
       set({
         user: null,
         tokens: null,
         isLoading: false,
         isInitialized: true,
-        error: getErrorMessage(
-          error,
-          "Error al iniciar sesión.",
-        ),
+        error: info.message,
+        fieldErrors: info.fieldErrors,
       });
 
-    throw error;
-  }
-},
+      throw error;
+    }
+  },
 
-async register(dto) {
-  set({
-    isLoading: true,
-    error: null,
-  });
+  async register(dto) {
+    set({ isLoading: true, error: null, fieldErrors: null });
 
-  try {
-    const session = await authUseCase.register(dto);
+    try {
+      const session = await authUseCase.register(dto);
 
-    set({
-      user: session.user,
-      tokens: session.tokens,
-      isLoading: false,
-      isInitialized: true,
-      error: null,
-    });
-  } catch (error: unknown) {
-    set({
-      user: null,
-      tokens: null,
-      isLoading: false,
-      isInitialized: true,
-      error: getErrorMessage(
-        error,
-        "Error al registrar el cliente.",
-      ),
-    });
+      set({
+        user: session.user,
+        tokens: session.tokens,
+        isLoading: false,
+        isInitialized: true,
+        error: null,
+        fieldErrors: null,
+      });
+    } catch (error: unknown) {
+      const info = extractErrorInfo(error);
 
-    throw error;
-  }
-},
+      set({
+        user: null,
+        tokens: null,
+        isLoading: false,
+        isInitialized: true,
+        error: info.message,
+        fieldErrors: info.fieldErrors,
+      });
+
+      throw error;
+    }
+  },
 
   async logout() {
-    set({
-      isLoading: true,
-      error: null,
-    });
+    set({ isLoading: true, error: null, fieldErrors: null });
 
     try {
       await authUseCase.logout();
@@ -191,56 +150,58 @@ async register(dto) {
         isLoading: false,
         isInitialized: true,
         error: null,
+        fieldErrors: null,
       });
     }
   },
 
-async loadSession() {
-  set({
-    isLoading: true,
-    error: null,
-  });
+  async loadSession() {
+    set({ isLoading: true, error: null, fieldErrors: null });
 
-  try {
-    const session =
-      await authUseCase.restoreSession();
+    try {
+      const session = await authUseCase.restoreSession();
 
-    if (!session) {
+      if (!session) {
+        set({
+          user: null,
+          tokens: null,
+          isLoading: false,
+          isInitialized: true,
+          error: null,
+          fieldErrors: null,
+        });
+
+        return;
+      }
+
+      set({
+        user: session.user,
+        tokens: session.tokens,
+        isLoading: false,
+        isInitialized: true,
+        error: null,
+        fieldErrors: null,
+      });
+    } catch (error: unknown) {
+      const info = extractErrorInfo(error);
+
       set({
         user: null,
         tokens: null,
         isLoading: false,
         isInitialized: true,
-        error: null,
+        error: info.message,
+        fieldErrors: null,
       });
-
-      return;
     }
+  },
 
-    set({
-      user: session.user,
-      tokens: session.tokens,
-      isLoading: false,
-      isInitialized: true,
-      error: null,
-    });
-  } catch (error: unknown) {
-    set({
-      user: null,
-      tokens: null,
-      isLoading: false,
-      isInitialized: true,
-      error: getErrorMessage(
-        error,
-        "No se pudo restaurar la sesión.",
-      ),
-    });
-  }
-},
   clearError() {
-    set({
-      error: null,
-    });
+    set({ error: null, fieldErrors: null });
+  },
+
+  clearFieldErrors() {
+    set({ fieldErrors: null });
   },
 
   clearSession() {
@@ -252,6 +213,7 @@ async loadSession() {
       isLoading: false,
       isInitialized: true,
       error: null,
+      fieldErrors: null,
     });
   },
 }));

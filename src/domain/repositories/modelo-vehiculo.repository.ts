@@ -1,17 +1,33 @@
 // src/domain/repositories/modelo-vehiculo.repository.ts
 
-import type { ModeloVehiculo } from "@/domain/entities/modelo-vehiculo.entity";
+import type {
+  ModeloVehiculo,
+  ModeloVehiculoFormData,
+  ModeloVehiculoPaginatedResponse,
+  ModeloVehiculoUpdateData,
+} from "@/domain/entities/modelo-vehiculo.entity";
 
 export interface ModeloVehiculoRepository {
-  /**
-   * Obtiene todos los modelos de vehículos.
-   */
   getAll(): Promise<ModeloVehiculo[]>;
 
-  /**
-   * Obtiene un modelo de vehículo por su identificador.
-   */
+  getPaginated(
+    filters?: Record<string, unknown>,
+  ): Promise<ModeloVehiculoPaginatedResponse>;
+
   getById(
     id: number,
   ): Promise<ModeloVehiculo>;
+
+  create(
+    data: ModeloVehiculoFormData,
+  ): Promise<ModeloVehiculo>;
+
+  update(
+    id: number,
+    data: ModeloVehiculoUpdateData,
+  ): Promise<ModeloVehiculo>;
+
+  remove(
+    id: number,
+  ): Promise<void>;
 }

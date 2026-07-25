@@ -746,61 +746,6 @@ export default function InicioPage() {
           </div>
         </section>
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-800 bg-slate-950 text-slate-300">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-3 md:items-center lg:px-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white">
-              <Wrench className="h-5 w-5" />
-            </div>
-
-            <div>
-              <p className="font-semibold text-white">
-                Autocenter
-              </p>
-
-              <p className="text-xs text-slate-400">
-                Taller para todas las marcas
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-5 text-sm md:justify-center">
-            <a
-              href="#inicio"
-              className="transition-colors hover:text-white"
-            >
-              Inicio
-            </a>
-
-            <a
-              href="#por-que-elegirnos"
-              className="transition-colors hover:text-white"
-            >
-              Nosotros
-            </a>
-
-            <Link
-              to="/servicios"
-              className="transition-colors hover:text-white"
-            >
-              Servicios
-            </Link>
-
-            <a
-              href="#contacto"
-              className="transition-colors hover:text-white"
-            >
-              Contacto
-            </a>
-          </div>
-
-          <p className="text-sm text-slate-400 md:text-right">
-            © {new Date().getFullYear()} Autocenter
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }
