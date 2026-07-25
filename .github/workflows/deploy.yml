@@ -34,7 +34,7 @@ jobs:
         run: |
           echo "Buscando URL de API en dist..."
 
-          if ! grep -R -q "http://autocenter-api.uaeftt-ute.site/api" dist; then
+          if ! grep -R -q "https://autocenter-api.uaeftt-ute.site/api" dist; then
             echo "No se encontró la URL correcta de la API en el build"
             exit 1
           fi
@@ -69,9 +69,9 @@ jobs:
             nginx -t
             systemctl reload nginx
 
-            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            HTTP_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" \
               -H "Host: autocenter.uaeftt-ute.site" \
-              http://127.0.0.1)
+              https://127.0.0.1)
 
             echo "Código HTTP recibido: $HTTP_STATUS"
 
