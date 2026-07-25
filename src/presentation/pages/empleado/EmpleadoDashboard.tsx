@@ -8,7 +8,6 @@ import {
   Car,
   CalendarDays,
   ClipboardList,
-  Stethoscope,
   
 } from "lucide-react";
 
