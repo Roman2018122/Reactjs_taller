@@ -17,11 +17,8 @@ import {
   Car,
   ClipboardList,
   LogOut,
-  ShieldCheck,
-  Stethoscope,
   User,
   Users,
-  Wrench,
 } from "lucide-react";
 
 import {
